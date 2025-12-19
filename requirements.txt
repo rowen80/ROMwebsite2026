@@ -4,3 +4,4 @@ jinja2
 SQLAlchemy
 python-dotenv
 requests
+python-jose[cryptography]
