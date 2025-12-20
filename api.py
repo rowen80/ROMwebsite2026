@@ -468,9 +468,17 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def verify_password(plain_password: str, password_hash: str) -> bool:
-    return pwd_context.verify(plain_password, password_hash)
+from passlib.exc import UnknownHashError
 
+def verify_password(plain_password: str, password_hash: str) -> bool:
+    if not password_hash:
+        return False
+    try:
+        return pwd_context.verify(plain_password, password_hash)
+    except UnknownHashError:
+        return False
+    except Exception:
+        return False
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
