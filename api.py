@@ -717,27 +717,22 @@ def login(user_in: UserLogin):
 
 @app.post("/auth/forgot-password")
 def forgot_password(req: ForgotPasswordRequest):
-    """
-    Start a password reset:
-      - If a customer with this email exists, generate a temporary password,
-        save it as their new password, and send it via Zapier.
-      - Always return a generic success message so we don't reveal whether
-        the email exists or not.
-    """
     db = SessionLocal()
     try:
         customer = get_customer_by_email(db, req.email)
+
         if customer and customer.email:
-    # prevent duplicate sends
-        if customer.updated_at and (datetime.utcnow() - customer.updated_at).seconds < 30:
-            return {"message": "If that email exists, a reset email will be sent shortly."}
+            if customer.updated_at and (datetime.utcnow() - customer.updated_at).total_seconds() < 30:
+                return {"message": "If that email exists, a reset email will be sent shortly."}
 
-        temp_password = secrets.token_urlsafe(8)
-        customer.password_hash = get_password_hash(temp_password)
-        customer.updated_at = datetime.utcnow()
-        db.commit()
-        send_password_reset_email_via_zapier(customer.email, temp_password)
+            temp_password = secrets.token_urlsafe(8)
+            customer.password_hash = get_password_hash(temp_password)
+            customer.updated_at = datetime.utcnow()
+            db.commit()
 
+            send_password_reset_email_via_zapier(customer.email, temp_password)
+
+        return {"message": "If that email exists, a reset email will be sent shortly."}
     finally:
         db.close()
 
