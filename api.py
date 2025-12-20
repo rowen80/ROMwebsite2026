@@ -337,21 +337,17 @@ def send_booking_email_via_zapier(payload: dict):
 
 
 def send_password_reset_email_via_zapier(email: str, temp_password: str):
-    """
-    Sends a password reset email via Zapier.
-    The Zap should send an email with:
-      - this temp_password
-      - a link back to your site (e.g. https://www.ryanowenphotography.com/#change-password)
-    """
     if not RESET_ZAPIER_WEBHOOK_URL:
-        print("RESET_ZAPIER_WEBHOOK_URL not set; skipping password reset email.")
+        print("RESET_ZAPIER_WEBHOOK_URL missing")
         return
 
     payload = {
         "email": email,
         "temp_password": temp_password,
-        "reset_link": f"{FRONTEND_BASE_URL}/#change-password",
     }
+
+    print("Sending reset webhook:", payload)
+    requests.post(RESET_ZAPIER_WEBHOOK_URL, json=payload, timeout=5)
 
     try:
         resp = requests.post(RESET_ZAPIER_WEBHOOK_URL, json=payload, timeout=10)
