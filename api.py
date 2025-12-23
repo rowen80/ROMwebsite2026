@@ -23,6 +23,11 @@ from models import SessionLocal, Customer, Job
 
 from models import init_db
 
+from fastapi import Depends, HTTPException, Request, Form
+from fastapi.responses import HTMLResponse, RedirectResponse
+from sqlalchemy import or_
+import os
+
 
 # ------------------------------------------------------------
 # FastAPI app + static + CORS
@@ -511,6 +516,27 @@ async def get_current_customer(token: str = Depends(oauth2_scheme)) -> Customer:
         detail="Could not validate credentials.",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+ADMIN_EMAILS = set(
+    e.strip().lower()
+    for e in os.getenv(
+        "ADMIN_EMAILS",
+        "ryan@ryanowenphotography.com"
+    ).split(",")
+    if e.strip()
+)
+
+async def require_admin(
+    current_customer: Customer = Depends(get_current_customer)
+) -> Customer:
+    email = (current_customer.email or "").strip().lower()
+    if email not in ADMIN_EMAILS:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access only"
+        )
+    return current_customer
+
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
