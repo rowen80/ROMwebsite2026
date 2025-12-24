@@ -1149,7 +1149,7 @@ class CustomerUpdateRequest(BaseModel):
     alt_phones: str | None = None
 
 
-@app.post("/admin/customers/update")
+@app.post("/admin/customers_sync/update")
 def update_customer(request: Request, req: CustomerUpdateRequest):
     require_customer_sync_key(request)
 
