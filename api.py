@@ -20,7 +20,7 @@ from pydantic import field_validator
 
 
 from models import SessionLocal, Customer, Job
-
+from models import Customer, Job, InvoiceItem
 from models import init_db
 
 from fastapi import Depends, HTTPException, Request, Form
@@ -598,6 +598,80 @@ def export_customers(request: Request):
     finally:
         db.close()
 
+class CustomerMergeRequest(BaseModel):
+    source_customer_id: int
+    target_customer_id: int
+
+
+@app.post("/admin/customers/merge")
+def merge_customers(req: CustomerMergeRequest, request: Request):
+    # Protected by CUSTOMER_SYNC_KEY, no user login required
+    require_customer_sync_key(request)
+
+    source_id = int(req.source_customer_id)
+    target_id = int(req.target_customer_id)
+
+    if source_id == target_id:
+        raise HTTPException(status_code=400, detail="source_customer_id cannot equal target_customer_id")
+
+    db = SessionLocal()
+    try:
+        source = db.query(Customer).get(source_id)
+        target = db.query(Customer).get(target_id)
+
+        if not source or not target:
+            raise HTTPException(status_code=404, detail="Source or target customer not found")
+
+        # ---- Re-point related rows (jobs + invoice_items) ----
+        db.query(Job).filter(Job.customer_id == source_id).update(
+            {Job.customer_id: target_id}, synchronize_session=False
+        )
+        db.query(InvoiceItem).filter(InvoiceItem.customer_id == source_id).update(
+            {InvoiceItem.customer_id: target_id}, synchronize_session=False
+        )
+
+        # ---- Preserve identity info without overwriting primary ----
+        def _append_unique_note(existing: str, line: str) -> str:
+            existing = existing or ""
+            line = (line or "").strip()
+            if not line:
+                return existing
+            if line in existing:
+                return existing
+            if existing and not existing.endswith("\n"):
+                existing += "\n"
+            return existing + line + "\n"
+
+        # If target fields are blank, we can fill them from source (safe)
+        if not (target.first_name or "").strip() and (source.first_name or "").strip():
+            target.first_name = source.first_name
+        if not (target.last_name or "").strip() and (source.last_name or "").strip():
+            target.last_name = source.last_name
+        if not (target.company or "").strip() and (source.company or "").strip():
+            target.company = source.company
+
+        # Always preserve source email/phone in target notes if different
+        if (source.email or "").strip() and (source.email or "").strip().lower() != (target.email or "").strip().lower():
+            target.notes = _append_unique_note(target.notes, f"ALT_EMAIL: {source.email.strip()} (merged from {source_id})")
+        if (source.phone or "").strip() and (normalize_phone(source.phone) or "") != (normalize_phone(target.phone) or ""):
+            target.notes = _append_unique_note(target.notes, f"ALT_PHONE: {source.phone.strip()} (merged from {source_id})")
+
+        # Preserve source notes too
+        if (source.notes or "").strip():
+            target.notes = _append_unique_note(target.notes, f"MERGED_NOTES_FROM_{source_id}: {source.notes.strip()}")
+
+        # Mark source as merged (non-destructive)
+        source.notes = _append_unique_note(source.notes, f"MERGED_INTO: {target_id}")
+
+        db.commit()
+
+        return {
+            "status": "ok",
+            "merged_source": source_id,
+            "into_target": target_id,
+        }
+    finally:
+        db.close()
 
 
 # ------------------------------------------------------------
