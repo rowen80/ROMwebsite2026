@@ -8,8 +8,10 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
-    Text,
 )
+
+from sqlalchemy import text
+
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from datetime import datetime
 from sqlalchemy import DateTime
