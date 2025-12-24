@@ -49,6 +49,25 @@ class Customer(Base):
     jobs = relationship("Job", back_populates="customer")
     invoice_items = relationship("InvoiceItem", back_populates="customer")
 
+    aliases = relationship("CustomerAlias", back_populates="customer", cascade="all, delete-orphan")
+
+class CustomerAlias(Base):
+    __tablename__ = "customer_aliases"
+
+    id = Column(Integer, primary_key=True, index=True)
+    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False, index=True)
+
+    # Optional: where it came from (useful for audits/undo)
+    source_customer_id = Column(Integer, nullable=True, index=True)
+
+    # e.g. "email", "phone", "name"
+    alias_type = Column(String, nullable=False, index=True)
+    alias_value = Column(String, nullable=False, index=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    customer = relationship("Customer", back_populates="aliases")
+
 
 class Job(Base):
     __tablename__ = "jobs"
