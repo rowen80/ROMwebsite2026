@@ -558,6 +558,46 @@ async def require_admin(current_customer: Customer = Depends(get_current_custome
         raise HTTPException(status_code=403, detail="Admin access only")
     return current_customer
 
+def require_customer_sync_key(request: Request) -> None:
+    expected = os.getenv("CUSTOMER_SYNC_KEY", "")
+    if not expected:
+        raise HTTPException(status_code=500, detail="CUSTOMER_SYNC_KEY not configured")
+
+    provided = request.headers.get("x-api-key", "")
+    if provided != expected:
+        raise HTTPException(status_code=401, detail="Invalid sync key")
+
+
+@app.get("/admin/customers/export")
+def export_customers(request: Request):
+    # No login required; protected by CUSTOMER_SYNC_KEY
+    require_customer_sync_key(request)
+
+    db = SessionLocal()
+    try:
+        customers = (
+            db.query(Customer)
+            .order_by(Customer.id.asc())
+            .all()
+        )
+
+        out = []
+        for c in customers:
+            out.append({
+                "customer_id": c.id,
+                "first_name": c.first_name,
+                "last_name": c.last_name,
+                "email": c.email,
+                "phone": c.phone,
+                "company": c.company,
+                "created_at": c.created_at.isoformat() if getattr(c, "created_at", None) else None,
+                "updated_at": c.updated_at.isoformat() if getattr(c, "updated_at", None) else None,
+            })
+
+        return {"count": len(out), "customers": out}
+    finally:
+        db.close()
+
 
 
 # ------------------------------------------------------------
