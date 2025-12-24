@@ -22,10 +22,14 @@ from pydantic import field_validator
 from models import SessionLocal, Customer, Job
 from models import Customer, Job, InvoiceItem, CustomerAlias
 from models import init_db
+from models import engine
+
 
 from fastapi import Depends, HTTPException, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import or_
+from sqlalchemy import text
+
 import os
 
 
@@ -577,9 +581,11 @@ def export_customers(request: Request):
     try:
         customers = (
             db.query(Customer)
+            .filter(Customer.merged_into_customer_id.is_(None))
             .order_by(Customer.id.asc())
             .all()
         )
+
 
         out = []
         for c in customers:
@@ -592,6 +598,9 @@ def export_customers(request: Request):
                 "company": c.company,
                 "created_at": c.created_at.isoformat() if getattr(c, "created_at", None) else None,
                 "updated_at": c.updated_at.isoformat() if getattr(c, "updated_at", None) else None,
+                "alt_emails": c.alt_emails,
+                "alt_phones": c.alt_phones,
+
             })
 
         return {"count": len(out), "customers": out}
