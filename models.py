@@ -8,6 +8,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
+    Text,
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from datetime import datetime
@@ -117,3 +118,16 @@ class InvoiceItem(Base):
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+
+    # IMPORTANT: create_all() won't add new columns to existing Postgres tables.
+    # So we add our merge/alt-contact columns explicitly (safe if already present).
+    if engine.dialect.name == "postgresql":
+        stmts = [
+            'ALTER TABLE customers ADD COLUMN IF NOT EXISTS merged_into_customer_id INTEGER',
+            'ALTER TABLE customers ADD COLUMN IF NOT EXISTS alt_emails VARCHAR',
+            'ALTER TABLE customers ADD COLUMN IF NOT EXISTS alt_phones VARCHAR',
+        ]
+        with engine.begin() as conn:
+            for s in stmts:
+                conn.execute(text(s))
+
