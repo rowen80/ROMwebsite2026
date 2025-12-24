@@ -20,7 +20,7 @@ from pydantic import field_validator
 
 
 from models import SessionLocal, Customer, Job
-from models import Customer, Job, InvoiceItem
+from models import Customer, Job, InvoiceItem, CustomerAlias
 from models import init_db
 
 from fastapi import Depends, HTTPException, Request, Form
@@ -630,19 +630,25 @@ def merge_customers(req: CustomerMergeRequest, request: Request):
             {InvoiceItem.customer_id: target_id}, synchronize_session=False
         )
 
-        # ---- Preserve identity info without overwriting primary ----
-        def _append_unique_note(existing: str, line: str) -> str:
-            existing = existing or ""
-            line = (line or "").strip()
-            if not line:
-                return existing
-            if line in existing:
-                return existing
-            if existing and not existing.endswith("\n"):
-                existing += "\n"
-            return existing + line + "\n"
+        # ---- Preserve identity info as aliases (no overwrite of primary) ----
+        def add_alias(alias_type: str, alias_value: str):
+            v = (alias_value or "").strip()
+            if not v:
+                return
+            exists = db.query(CustomerAlias).filter(
+                CustomerAlias.customer_id == target_id,
+                CustomerAlias.alias_type == alias_type,
+                CustomerAlias.alias_value == v,
+            ).first()
+            if not exists:
+                db.add(CustomerAlias(
+                    customer_id=target_id,
+                    source_customer_id=source_id,
+                    alias_type=alias_type,
+                    alias_value=v
+                ))
 
-        # If target fields are blank, we can fill them from source (safe)
+        # Fill blanks on target from source (safe)
         if not (target.first_name or "").strip() and (source.first_name or "").strip():
             target.first_name = source.first_name
         if not (target.last_name or "").strip() and (source.last_name or "").strip():
@@ -650,15 +656,20 @@ def merge_customers(req: CustomerMergeRequest, request: Request):
         if not (target.company or "").strip() and (source.company or "").strip():
             target.company = source.company
 
-        # Always preserve source email/phone in target notes if different
+        # Save source identity as aliases if different
         if (source.email or "").strip() and (source.email or "").strip().lower() != (target.email or "").strip().lower():
-            target.notes = _append_unique_note(target.notes, f"ALT_EMAIL: {source.email.strip()} (merged from {source_id})")
-        if (source.phone or "").strip() and (normalize_phone(source.phone) or "") != (normalize_phone(target.phone) or ""):
-            target.notes = _append_unique_note(target.notes, f"ALT_PHONE: {source.phone.strip()} (merged from {source_id})")
+            add_alias("email", source.email)
 
-        # Preserve source notes too
-        if (source.notes or "").strip():
-            target.notes = _append_unique_note(target.notes, f"MERGED_NOTES_FROM_{source_id}: {source.notes.strip()}")
+        src_phone = (source.phone or "").strip()
+        tgt_phone = (target.phone or "").strip()
+        if src_phone and normalize_phone(src_phone) != normalize_phone(tgt_phone):
+            add_alias("phone", src_phone)
+
+        src_name = f"{(source.first_name or '').strip()} {(source.last_name or '').strip()}".strip()
+        tgt_name = f"{(target.first_name or '').strip()} {(target.last_name or '').strip()}".strip()
+        if src_name and src_name.lower() != tgt_name.lower():
+            add_alias("name", src_name)
+
 
         # Mark source as merged (non-destructive)
         source.notes = _append_unique_note(source.notes, f"MERGED_INTO: {target_id}")
