@@ -42,6 +42,12 @@ class Customer(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # Merge + alternate contact info (keeps everything in customers table)
+    merged_into_customer_id = Column(Integer, nullable=True, index=True)
+    alt_emails = Column(String, nullable=True)
+    alt_phones = Column(String, nullable=True)
+
+
     # NEW:
     password_hash = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
