@@ -48,7 +48,6 @@ class Customer(Base):
 
     jobs = relationship("Job", back_populates="customer")
     invoice_items = relationship("InvoiceItem", back_populates="customer")
-
     aliases = relationship("CustomerAlias", back_populates="customer", cascade="all, delete-orphan")
 
 class CustomerAlias(Base):
@@ -57,10 +56,10 @@ class CustomerAlias(Base):
     id = Column(Integer, primary_key=True, index=True)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False, index=True)
 
-    # Optional: where it came from (useful for audits/undo)
+    # Where it came from (helps audits/undo)
     source_customer_id = Column(Integer, nullable=True, index=True)
 
-    # e.g. "email", "phone", "name"
+    # "email", "phone", "name"
     alias_type = Column(String, nullable=False, index=True)
     alias_value = Column(String, nullable=False, index=True)
 
