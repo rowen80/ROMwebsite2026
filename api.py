@@ -986,10 +986,13 @@ async def my_jobs(current_customer: Customer = Depends(get_current_customer)):
         jobs = (
             db.query(Job)
             .filter(Job.customer_id == current_customer.id)
+            # Hide cancelled jobs from the customer Profile history
+            .filter(or_(Job.status.is_(None), Job.status != "CANCELLED"))
             .order_by(Job.job_date.desc().nullslast(), Job.id.desc())
             .limit(20)
             .all()
         )
+
         return jobs
     finally:
         db.close()
@@ -1213,5 +1216,41 @@ def export_jobs_sync(request: Request, include_cancelled: int = 0):
             })
 
         return {"count": len(out), "jobs": out}
+    finally:
+        db.close()
+
+@app.post("/admin/jobs_sync/update")
+def update_job_sync(request: Request, payload: dict):
+    require_customer_sync_key(request)
+
+    job_id = payload.get("job_id")
+    status = payload.get("status")
+
+    if not job_id:
+        raise HTTPException(status_code=400, detail="Missing job_id")
+
+    db = SessionLocal()
+    try:
+        job = db.query(Job).get(int(job_id))
+        if not job:
+            raise HTTPException(status_code=404, detail="Job not found")
+
+        if status is not None:
+            status = str(status).strip().upper()
+
+            if status == "CANCELLED":
+                job.status = "CANCELLED"
+                job.cancelled_at = datetime.utcnow()
+            elif status == "":
+                # blank means "do nothing"
+                pass
+            else:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Invalid status. Only CANCELLED or blank allowed."
+                )
+
+        db.commit()
+        return {"status": "ok", "job_id": job.id}
     finally:
         db.close()
