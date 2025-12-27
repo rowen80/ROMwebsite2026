@@ -1197,7 +1197,7 @@ def export_jobs_sync(request: Request, include_cancelled: int = 0):
         jobs = q.order_by(Job.id.desc()).limit(5000).all()
 
         out = []
-        for j in jobs:
+        for job, cust in rows:
             out.append({
                 "job_id": job.id,
                 "customer_id": cust.id,
