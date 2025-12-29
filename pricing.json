@@ -47,7 +47,7 @@
 
   "services": {
     "Basic Photos": { "base": 100, "apply_multipliers": true },
-    "Drone Photos": { "base": 49, "apply_multipliers": false },
+    "Drone Photos": { "base": 59, "apply_multipliers": false },
     "Twilight Photos": { "base": 199, "apply_multipliers": false },
     "Video": { "base": 299, "apply_multipliers": false },
     "Instagram Reels (Vertical Video)": { "base": 99, "apply_multipliers": false },
