@@ -695,6 +695,26 @@
   <script>
 
     const API_BASE = "https://githubrequestform.onrender.com";
+    function scrollToTopSafe() {
+      // 1) Try the current window (works when not embedded)
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      } catch (_) {}
+    
+      // 2) Fallbacks for older / weird browsers
+      try { document.documentElement.scrollTop = 0; } catch (_) {}
+      try { document.body.scrollTop = 0; } catch (_) {}
+    
+      // 3) If embedded (iframe), try scrolling the parent page
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        }
+      } catch (_) {
+        // parent may block cross-origin scrolling; ignore
+      }
+    }
+
 
     function extractErrorMessage(data, fallback) {
       if (!data) return fallback;
@@ -1182,7 +1202,7 @@
             heroImg.style.objectPosition = THANKYOU_CROP;
           }
           renderEstimate(result.estimate);
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          scrollToTopSafe();
         } catch (err) {
           console.error(err);
           messageEl.textContent = "Sorry, something went wrong. Please try again or email Ryan directly.";
@@ -1204,7 +1224,7 @@
         messageEl.className = "message";
         form.reset();
         renderEstimate(null);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        scrollToTopSafe();
       });
     }
 
