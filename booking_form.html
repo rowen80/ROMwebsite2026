@@ -617,6 +617,10 @@
             <label for="new_password_confirm">Confirm new password</label>
             <input type="password" id="new_password_confirm" required />
 
+            <div class="helper">
+              Minimum 8 characters.
+            </div>
+
             <div style="margin-top:10px;">
               <button type="submit">Update Password</button>
             </div>
@@ -649,6 +653,10 @@
 
           <label for="reg_password">Password</label>
           <input type="password" id="reg_password" required />
+
+          <div class="helper">
+            Minimum 8 characters.
+          </div>
 
           <label for="reg_phone">Phone (optional)</label>
           <input type="tel" id="reg_phone" />
@@ -687,6 +695,16 @@
   <script>
 
     const API_BASE = "https://githubrequestform.onrender.com";
+
+    function extractErrorMessage(data, fallback) {
+      if (!data) return fallback;
+      if (typeof data.detail === "string") return data.detail;
+      if (Array.isArray(data.detail) && data.detail.length && data.detail[0].msg) {
+        return data.detail[0].msg;
+      }
+      return fallback;
+    }
+
 
     // ----- Element references -----
     const form = document.getElementById("booking-form");
@@ -1349,8 +1367,12 @@
 
           if (!resp.ok) {
             console.error("Register error:", data);
-            const detail = data.detail || "Could not create account.";
-            registerMessage.textContent = detail;
+            const msg = extractErrorMessage(
+              data,
+              "Password must be at least 8 characters."
+            );
+            registerMessage.textContent = msg;
+
             registerMessage.classList.add("error");
             return;
           }
@@ -1425,8 +1447,12 @@
           const data = await resp.json().catch(() => ({}));
           if (!resp.ok) {
             console.error("Change password error:", data);
-            const detail = data.detail || "Password update failed.";
-            changePasswordMessage.textContent = detail;
+            const msg = extractErrorMessage(
+              data,
+              "Password must be at least 8 characters."
+            );
+            changePasswordMessage.textContent = msg;
+
             changePasswordMessage.classList.add("error");
             return;
           }
