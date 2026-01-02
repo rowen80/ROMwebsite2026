@@ -54,7 +54,7 @@
     "Community Photos": { "base": 49, "apply_multipliers": false },
     "Zillow 360 Tour": { "base": 99, "apply_multipliers": false },
     "Zillow Floor Plan": { "base": 0, "apply_multipliers": false },
-    "Matterport 360 (Must Have Matterport Account)": { "base": 0, "apply_multipliers": false },
+    "Matterport 360 (Must Have Matterport Account)": { "base": 99, "apply_multipliers": false },
     "Catalogue Style Photos (Quality not Quantity)": { "base": 399, "apply_multipliers": false }
   },
 
