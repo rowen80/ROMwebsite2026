@@ -2,6 +2,7 @@
 import os
 import json
 import secrets
+import uuid
 from typing import List, Optional
 from datetime import datetime, timedelta
 
@@ -71,11 +72,12 @@ app.add_middleware(
 # ------------------------------------------------------------
 
 load_dotenv()
-ZAPIER_WEBHOOK_URL = os.getenv("ZAPIER_WEBHOOK_URL")
+N8N_INTAKE_WEBHOOK_URL = os.getenv("N8N_INTAKE_WEBHOOK_URL")
+N8N_INTAKE_SECRET = os.getenv("N8N_INTAKE_SECRET")
 RESET_ZAPIER_WEBHOOK_URL = os.getenv("RESET_ZAPIER_WEBHOOK_URL")
 
-if not ZAPIER_WEBHOOK_URL:
-    print("WARNING: ZAPIER_WEBHOOK_URL not set in .env. /jobs emails will be skipped.")
+if not N8N_INTAKE_WEBHOOK_URL:
+    print("WARNING: N8N_INTAKE_WEBHOOK_URL not set in .env. /jobs n8n handoff will fail.")
 
 FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://127.0.0.1:8000")
 
@@ -329,20 +331,104 @@ def get_or_create_customer(db, first_name, last_name, email, phone, company) -> 
     return cust
 
 
-def send_booking_email_via_zapier(payload: dict):
+def build_n8n_booking_payload(job_in, customer, job, estimate) -> dict:
     """
-    POSTs the booking payload to a Zapier webhook.
+    Build a normalized, structured payload for the n8n intake webhook.
+    Preserves the semicolon-separated human-readable line-item text.
     """
-    if not ZAPIER_WEBHOOK_URL:
-        print("ZAPIER_WEBHOOK_URL not set; skipping Zapier notification.")
-        return
+    line_items_text = "; ".join(
+        [f"{li.label}: ${li.line_total:.2f}" for li in estimate.line_items]
+    )
+    return {
+        "meta": {
+            "source": "romwebsite2026",
+            "requestId": str(uuid.uuid4()),
+            "submittedAt": datetime.utcnow().isoformat() + "Z",
+            "jobId": job.id,
+            "customerId": customer.id,
+        },
+        "customer": {
+            "firstName": customer.first_name,
+            "lastName": customer.last_name,
+            "email": customer.email,
+            "phone": customer.phone,
+            "agency": job_in.agency,
+            "isFirstTime": job_in.is_first_time,
+        },
+        "listing": {
+            "address": job.address,
+            "city": job.city,
+            "buildingName": job_in.building_name,
+            "bedrooms": job_in.bedrooms,
+            "bathrooms": job_in.bathrooms,
+            "listingSize": job_in.listing_size,
+            "estimatedPriceBand": job_in.estimated_price_band,
+            "usage": job_in.usage,
+        },
+        "timing": {
+            "dateListingReady": job_in.date_listing_ready,
+            "dateToGoLive": job_in.date_to_go_live,
+            "desiredDate": job_in.desired_date,
+            "isVacant": job_in.is_vacant,
+            "duringShootAgreement": job_in.during_shoot_agreement,
+        },
+        "access": {
+            "accessType": job_in.access_type,
+            "accessCode": job_in.access_code,
+            "ownerContactInfo": job_in.owner_contact_info,
+        },
+        "services": {
+            "selected": job_in.services,
+            "views": job_in.views,
+            "finishedBasement": job_in.finished_basement,
+            "notesForPhotographer": job_in.notes_for_photographer,
+        },
+        "estimate": {
+            "currency": estimate.currency,
+            "subtotal": estimate.subtotal,
+            "estimatedTotal": estimate.total,
+            "lineItems": estimate.model_dump().get("line_items", []),
+            "lineItemsText": line_items_text,
+            "meta": estimate.meta,
+        },
+        "flags": {
+            "termsAccepted": True,
+        },
+    }
+
+
+def send_booking_to_n8n(payload: dict):
+    """
+    POSTs the normalized booking payload to the n8n intake webhook.
+    Raises HTTPException(502) if the webhook is not configured or returns a non-2xx status.
+    """
+    if not N8N_INTAKE_WEBHOOK_URL:
+        raise HTTPException(
+            status_code=502,
+            detail="n8n intake webhook not configured. Set N8N_INTAKE_WEBHOOK_URL.",
+        )
+
+    headers = {"Content-Type": "application/json"}
+    if N8N_INTAKE_SECRET:
+        headers["x-rom-intake-key"] = N8N_INTAKE_SECRET
 
     try:
-        resp = requests.post(ZAPIER_WEBHOOK_URL, json=payload, timeout=10)
-        if resp.status_code >= 400:
-            print(f"Zapier webhook returned {resp.status_code}: {resp.text[:200]}")
-    except Exception as e:
-        print(f"Error calling Zapier webhook: {e}")
+        resp = requests.post(N8N_INTAKE_WEBHOOK_URL, json=payload, headers=headers, timeout=15)
+    except requests.exceptions.RequestException as e:
+        print(f"n8n intake webhook request failed: {e}")
+        raise HTTPException(status_code=502, detail=f"n8n intake webhook unreachable: {e}")
+
+    if resp.status_code >= 400:
+        print(f"n8n intake webhook returned {resp.status_code}: {resp.text[:300]}")
+        raise HTTPException(
+            status_code=502,
+            detail=f"n8n intake webhook returned {resp.status_code}",
+        )
+
+    try:
+        return resp.json()
+    except Exception:
+        return {}
 
 
 def send_password_reset_email_via_zapier(email: str, temp_password: str):
@@ -714,7 +800,8 @@ def booking_form():
 @app.post("/jobs", response_model=JobResponse)
 def create_job(job_in: JobCreate):
     """
-    Create a new job from the app and send details to Zapier.
+    Create a new job from the app and hand off to n8n for email and sheet intake.
+    Returns 502 if the n8n handoff fails (DB transaction is rolled back).
     """
     db = SessionLocal()
     try:
@@ -752,51 +839,8 @@ def create_job(job_in: JobCreate):
         db.add(job)
         db.flush()
 
-        zap_payload = {
-            "customer_id": customer.id,
-            "job_id": job.id,
-            "first_name": customer.first_name,
-            "last_name": customer.last_name,
-            "email": customer.email,
-            "phone": customer.phone,
-            "agency": job_in.agency,
-            "is_first_time": job_in.is_first_time,
-            "usage": job_in.usage,
-            "address": job.address,
-            "city": job.city,
-            "building_name": job_in.building_name,
-            "bedrooms": job_in.bedrooms,
-            "bathrooms": job_in.bathrooms,
-            "listing_size": job_in.listing_size,
-            "views": job_in.views,
-            "finished_basement": job_in.finished_basement,
-            "estimated_price_band": job_in.estimated_price_band,
-            "date_listing_ready": job_in.date_listing_ready,
-            "date_to_go_live": job_in.date_to_go_live,
-            "desired_date": job_in.desired_date,
-            "is_vacant": job_in.is_vacant,
-            "during_shoot_agreement": job_in.during_shoot_agreement,
-            "access_type": job_in.access_type,
-            "access_code": job_in.access_code,
-            "owner_contact_info": job_in.owner_contact_info,
-            "services": job_in.services,
-            "services_str": ", ".join(job_in.services),
-            "notes_for_photographer": job_in.notes_for_photographer,
-            "source": "APP",
-            "raw_form_json": raw_form,
-            "estimate": estimate.model_dump(),  # optional: include estimate in zap payload too
-            "estimate_total": estimate.total,
-            "estimate_subtotal": estimate.subtotal,
-            "estimate_currency": estimate.currency,
-            "estimate_multiplier": estimate.meta.get("combined_multiplier"),
-            "estimate_line_items": estimate.model_dump().get("line_items", []),
-            "estimate_line_items_str": "; ".join(
-                [f"{li.label}: ${li.line_total:.2f}" for li in estimate.line_items]
-            ),
-
-        }
-
-        send_booking_email_via_zapier(zap_payload)
+        n8n_payload = build_n8n_booking_payload(job_in, customer, job, estimate)
+        send_booking_to_n8n(n8n_payload)
         db.commit()
 
         return JobResponse(job_id=job.id, customer_id=customer.id, estimate=estimate)
