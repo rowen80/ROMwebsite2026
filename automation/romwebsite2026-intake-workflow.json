@@ -1,0 +1,360 @@
+{
+  "name": "romwebsite2026-request-intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "romwebsite2026/request-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "rom-intake-webhook-01"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.headers['x-rom-intake-key']}}",
+              "operation": "equals",
+              "value2": "={{$env.ROM_INTAKE_SECRET}}"
+            }
+          ]
+        }
+      },
+      "id": "node-validate-secret",
+      "name": "Validate Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, error: \"Unauthorized\", code: 401 }) }}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "node-reject-unauthorized",
+      "name": "Reject Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [680, 480]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.customer && $json.body.customer.firstName ? 'ok' : ''}}",
+              "operation": "isNotEmpty"
+            },
+            {
+              "value1": "={{$json.body.customer && $json.body.customer.email ? 'ok' : ''}}",
+              "operation": "isNotEmpty"
+            },
+            {
+              "value1": "={{$json.body.listing && $json.body.listing.address ? 'ok' : ''}}",
+              "operation": "isNotEmpty"
+            },
+            {
+              "value1": "={{$json.body.estimate && $json.body.estimate.estimatedTotal ? 'ok' : ''}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "node-validate-fields",
+      "name": "Validate Required Fields",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, error: \"Missing required fields\", code: 422 }) }}",
+        "options": {
+          "responseCode": 422
+        }
+      },
+      "id": "node-reject-invalid",
+      "name": "Reject Invalid Fields",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 480]
+    },
+    {
+      "parameters": {
+        "functionCode": "const body = $json.body;\nconst customer = body.customer || {};\nconst listing = body.listing || {};\nconst timing = body.timing || {};\nconst access = body.access || {};\nconst services = body.services || {};\nconst estimate = body.estimate || {};\nconst flags = body.flags || {};\nconst meta = body.meta || {};\n\n// Build reusable variables\nconst clientFullName = `${customer.firstName || ''} ${customer.lastName || ''}`.trim();\nconst servicesText = Array.isArray(services.selected) ? services.selected.join(', ') : (services.selected || '');\nconst viewsText = Array.isArray(services.views) ? services.views.join(', ') : (services.views || '');\nconst subject = `Photo Request: ${listing.address || 'Unknown Address'}`;\nconst internalSubject = `New Photo Request: ${listing.address || 'Unknown'} - ${clientFullName}`;\nconst submittedAt = meta.submittedAt || new Date().toISOString();\nconst requestId = meta.requestId || meta.jobId || '';\nconst sourceSystem = meta.source || 'romwebsite2026';\n\n// Agency-based recipient routing\nconst agencyName = (customer.agency || '').trim();\nconst penFedAgencies = ['PenFed Gallo Realty', 'LeeAnn Group'];\nconst includePenFed = penFedAgencies.includes(agencyName);\n\n// Build internal recipient list\nconst internalRecipients = ['ryan@ryanowenphotography.com'];\nif (includePenFed) {\n  internalRecipients.push('rehoboth@penfedrealty.com');\n}\n\n// Formatted estimate block\nconst lineItemsText = estimate.lineItemsText || '';\nconst estimatedTotal = estimate.estimatedTotal || estimate.subtotal || 0;\n\nreturn [{\n  json: {\n    // Original payload preserved\n    ...body,\n    // Computed variables for downstream nodes\n    _vars: {\n      clientFullName,\n      servicesText,\n      viewsText,\n      subject,\n      internalSubject,\n      submittedAt,\n      requestId,\n      sourceSystem,\n      internalRecipients,\n      includePenFed,\n      lineItemsText,\n      estimatedTotal,\n      agencyName,\n      // Passthrough convenience aliases\n      customer,\n      listing,\n      timing,\n      access,\n      services,\n      estimate,\n      flags,\n      meta\n    }\n  }\n}];"
+      },
+      "id": "node-build-vars",
+      "name": "Build Variables",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "ryan.owen@ryanowenphotography.com",
+        "toEmail": "={{$json._vars.customer.email}}",
+        "subject": "={{$json._vars.subject}}",
+        "emailType": "text",
+        "message": "=Hello {{$json._vars.customer.firstName}} {{$json._vars.customer.lastName}} ,\n\nThank you for your photo request. Your submission has been recorded below. We will review the information and get back to you with potential dates and times at our next opportunity. Your place in line has been saved. Please make sure to \"reply all\" (if applicable), so that everybody will have access to any notes and discussions regarding this photo shoot. Thank you again!\n\nEstimate (Final Amount Subject to Change):\n{{$json._vars.lineItemsText}}\nTotal: ${{$json._vars.estimatedTotal}}\n\n---------\n\nAddress:\n{{$json._vars.listing.buildingName}}\n{{$json._vars.listing.address}}\n{{$json._vars.listing.city}}\nBedrooms: {{$json._vars.listing.bedrooms}}\nBathrooms: {{$json._vars.listing.bathrooms}}\nSq Ft: {{$json._vars.listing.listingSize}}\nFinished Basement: {{$json._vars.services.finishedBasement}}\nEstimated Price Band: {{$json._vars.listing.estimatedPriceBand}}\n\n---------\n\nAgent:\n{{$json._vars.customer.firstName}} {{$json._vars.customer.lastName}}\n{{$json._vars.customer.email}}\n{{$json._vars.customer.phone}}\n{{$json._vars.listing.usage}}\n{{$json._vars.customer.agency}}\n\n----------\n\nDate Listing will be Ready: {{$json._vars.timing.dateListingReady}}\nVacant: {{$json._vars.timing.isVacant}}\nDate To go Live: {{$json._vars.timing.dateToGoLive}}\nDesired Shoot Date: {{$json._vars.timing.desiredDate}}\nDuring Shoot Agreement: {{$json._vars.timing.duringShootAgreement}}\n\n-----------\n\nNotes:\n{{$json._vars.services.notesForPhotographer}}\n\n------------\n\nAccess To the Property:\n{{$json._vars.access.accessType}}\nCode: {{$json._vars.access.accessCode}}\nOwner Info: {{$json._vars.access.ownerContactInfo}}\nTerms of Service: {{$json._vars.flags.termsAccepted}}\n\nThank you!\n\nRyan Owen\n240-401-8385\nwww.ryanowenphotography.com\n\n*** In order to give every project my full attention, I cannot respond to emails or texts while I am shooting. Thank you for your patience. ***",
+        "options": {},
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "FILL_IN_GMAIL_CREDENTIAL_ID",
+            "name": "Gmail OAuth2 — ryan.owen@ryanowenphotography.com"
+          }
+        }
+      },
+      "id": "node-client-email",
+      "name": "Send Client Confirmation Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [1120, 200],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "fromEmail": "ryan.owen@ryanowenphotography.com",
+        "toEmail": "={{$json._vars.internalRecipients.join(', ')}}",
+        "subject": "={{$json._vars.internalSubject}}",
+        "emailType": "text",
+        "message": "=NEW PHOTO REQUEST\nRequest ID: {{$json._vars.requestId}}\nSubmitted At: {{$json._vars.submittedAt}}\nSource: {{$json._vars.sourceSystem}}\n\n=====================================\nCLIENT\n=====================================\nName: {{$json._vars.customer.firstName}} {{$json._vars.customer.lastName}}\nEmail: {{$json._vars.customer.email}}\nPhone: {{$json._vars.customer.phone}}\nAgency: {{$json._vars.customer.agency}}\nFirst Time Client: {{$json._vars.customer.isFirstTime}}\n\n=====================================\nLISTING\n=====================================\nBuilding Name: {{$json._vars.listing.buildingName}}\nAddress: {{$json._vars.listing.address}}\nCity: {{$json._vars.listing.city}}\nBedrooms: {{$json._vars.listing.bedrooms}}\nBathrooms: {{$json._vars.listing.bathrooms}}\nSq Ft: {{$json._vars.listing.listingSize}}\nViews: {{$json._vars.viewsText}}\nFinished Basement: {{$json._vars.services.finishedBasement}}\nEstimated Price Band: {{$json._vars.listing.estimatedPriceBand}}\nUsage: {{$json._vars.listing.usage}}\n\n=====================================\nSERVICES\n=====================================\nSelected: {{$json._vars.servicesText}}\nNotes: {{$json._vars.services.notesForPhotographer}}\n\n=====================================\nESTIMATE\n=====================================\n{{$json._vars.lineItemsText}}\nTotal: ${{$json._vars.estimatedTotal}}\n\n=====================================\nTIMING\n=====================================\nDate Listing Ready: {{$json._vars.timing.dateListingReady}}\nDate To Go Live: {{$json._vars.timing.dateToGoLive}}\nDesired Shoot Date: {{$json._vars.timing.desiredDate}}\nVacant: {{$json._vars.timing.isVacant}}\nDuring Shoot Agreement: {{$json._vars.timing.duringShootAgreement}}\n\n=====================================\nACCESS\n=====================================\nAccess Type: {{$json._vars.access.accessType}}\nCode: {{$json._vars.access.accessCode}}\nOwner Info: {{$json._vars.access.ownerContactInfo}}\n\n=====================================\nMISC\n=====================================\nTerms Accepted: {{$json._vars.flags.termsAccepted}}",
+        "options": {},
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "FILL_IN_GMAIL_CREDENTIAL_ID",
+            "name": "Gmail OAuth2 — ryan.owen@ryanowenphotography.com"
+          }
+        }
+      },
+      "id": "node-internal-email",
+      "name": "Send Internal Notification Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [1120, 400],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "mode": "url",
+          "value": "FILL_IN_GOOGLE_SHEETS_SPREADSHEET_URL_OR_ID"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "2026 FORM_DATA"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SubmittedAt": "={{$json._vars.submittedAt}}",
+            "ClientFirstName": "={{$json._vars.customer.firstName}}",
+            "ClientLastName": "={{$json._vars.customer.lastName}}",
+            "ClientEmail": "={{$json._vars.customer.email}}",
+            "ClientPhone": "={{$json._vars.customer.phone}}",
+            "Company": "={{$json._vars.customer.agency}}",
+            "Bedrooms": "={{$json._vars.listing.bedrooms}}",
+            "List Price": "={{$json._vars.listing.estimatedPriceBand}}",
+            "Sq Ft": "={{$json._vars.listing.listingSize}}",
+            "Listing Address": "={{$json._vars.listing.address}}",
+            "City": "={{$json._vars.listing.city}}",
+            "Sales/Rentals": "={{$json._vars.listing.usage}}",
+            "Service": "={{$json._vars.servicesText}}",
+            "Estimated Line Items": "={{$json._vars.lineItemsText}}",
+            "Estimated Total": "={{$json._vars.estimatedTotal}}",
+            "BillingEmail": "={{$json._vars.customer.email}}",
+            "BuildingName": "={{$json._vars.listing.buildingName}}",
+            "Bathrooms": "={{$json._vars.listing.bathrooms}}",
+            "Views": "={{$json._vars.viewsText}}",
+            "FinishedBasement": "={{$json._vars.services.finishedBasement}}",
+            "DateListingReady": "={{$json._vars.timing.dateListingReady}}",
+            "DateToGoLive": "={{$json._vars.timing.dateToGoLive}}",
+            "DesiredDate": "={{$json._vars.timing.desiredDate}}",
+            "IsVacant": "={{$json._vars.timing.isVacant}}",
+            "DuringShootAgreement": "={{$json._vars.timing.duringShootAgreement}}",
+            "AccessType": "={{$json._vars.access.accessType}}",
+            "AccessCode": "={{$json._vars.access.accessCode}}",
+            "OwnerContactInfo": "={{$json._vars.access.ownerContactInfo}}",
+            "PhotographerNotes": "={{$json._vars.services.notesForPhotographer}}",
+            "TermsAccepted": "={{$json._vars.flags.termsAccepted}}",
+            "SourceSystem": "={{$json._vars.sourceSystem}}",
+            "RequestId": "={{$json._vars.requestId}}",
+            "ConfirmationEmailStatus": "={{$node['Send Client Confirmation Email'].error ? 'FAILED' : 'SENT'}}",
+            "InternalEmailStatus": "={{$node['Send Internal Notification Email'].error ? 'FAILED' : 'SENT'}}"
+          }
+        },
+        "options": {},
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "FILL_IN_GOOGLE_SHEETS_CREDENTIAL_ID",
+            "name": "Google Sheets OAuth2 — ROM Account"
+          }
+        }
+      },
+      "id": "node-sheets-append",
+      "name": "Append Google Sheets Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1340, 300],
+      "continueOnFail": false
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({\n  ok: true,\n  requestId: $json._vars.requestId,\n  clientEmailStatus: $node['Send Client Confirmation Email'].error ? 'FAILED' : 'SENT',\n  internalEmailStatus: $node['Send Internal Notification Email'].error ? 'FAILED' : 'SENT',\n  sheetWriteStatus: 'APPENDED'\n}) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "node-success-response",
+      "name": "Return Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({\n  ok: false,\n  error: 'Sheet append failed — intake not fully recorded',\n  requestId: $json._vars.requestId,\n  code: 500\n}) }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "node-sheet-fail-response",
+      "name": "Return Sheet Failure Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1560, 480]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Secret": {
+      "main": [
+        [
+          {
+            "node": "Validate Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Required Fields": {
+      "main": [
+        [
+          {
+            "node": "Build Variables",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject Invalid Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Variables": {
+      "main": [
+        [
+          {
+            "node": "Send Client Confirmation Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Internal Notification Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Client Confirmation Email": {
+      "main": [
+        [
+          {
+            "node": "Append Google Sheets Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Internal Notification Email": {
+      "main": [
+        [
+          {
+            "node": "Append Google Sheets Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Google Sheets Row": {
+      "main": [
+        [
+          {
+            "node": "Return Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Return Sheet Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": ["romwebsite2026", "intake", "booking"],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-17T00:00:00.000Z",
+  "versionId": "rom-intake-v1"
+}
