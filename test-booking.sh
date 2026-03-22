@@ -20,7 +20,7 @@ curl -X POST http://localhost:8001/jobs \
     "listing_size": "1500",
     "estimated_price_band": "$300k-$400k",
     "usage": "For Sale",
-    "services": ["Basic Photos", "Video"],
+    "services": ["Basic Photos", "Drone Photos", "Twilight Photos", "Video", "Instagram Reels (Vertical Video)", "Community Photos", "Zillow 360 Tour", "Zillow Floor Plan", "Matterport 360 (Must Have Matterport Account)", "Catalogue Style Photos (Quality not Quantity)"],
     "views": [],
     "finished_basement": "No",
     "date_listing_ready": "2026-04-01",
