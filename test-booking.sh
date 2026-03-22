@@ -20,7 +20,7 @@ curl -X POST http://localhost:8001/jobs \
     "listing_size": "1500",
     "estimated_price_band": "$300k-$400k",
     "usage": "For Sale",
-    "services": ["photos"],
+    "services": ["Basic Photos", "Video"],
     "views": [],
     "finished_basement": "No",
     "date_listing_ready": "2026-04-01",

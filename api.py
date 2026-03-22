@@ -339,6 +339,17 @@ def build_n8n_booking_payload(job_in, customer, job, estimate) -> dict:
     line_items_text = "; ".join(
         [f"{li.label}: ${li.line_total:.2f}" for li in estimate.line_items]
     )
+    
+    # Format bedrooms/bathrooms with units
+    bedrooms_formatted = f"{job_in.bedrooms} bedrooms" if job_in.bedrooms else ""
+    bathrooms_formatted = f"{job_in.bathrooms} bathrooms" if job_in.bathrooms else ""
+    
+    # Format listing size with units
+    listing_size_formatted = f"{job_in.listing_size} sqft" if job_in.listing_size else ""
+    
+    # Format usage (Sales vs For Sale)
+    usage_formatted = "Sales" if job_in.usage == "For Sale" else ("Rentals" if job_in.usage == "For Rent" else job_in.usage)
+    
     return {
         "meta": {
             "source": "romwebsite2026",
@@ -359,11 +370,11 @@ def build_n8n_booking_payload(job_in, customer, job, estimate) -> dict:
             "address": job.address,
             "city": job.city,
             "buildingName": job_in.building_name,
-            "bedrooms": job_in.bedrooms,
-            "bathrooms": job_in.bathrooms,
-            "listingSize": job_in.listing_size,
+            "bedrooms": bedrooms_formatted,
+            "bathrooms": bathrooms_formatted,
+            "listingSize": listing_size_formatted,
             "estimatedPriceBand": job_in.estimated_price_band,
-            "usage": job_in.usage,
+            "usage": usage_formatted,
         },
         "timing": {
             "dateListingReady": job_in.date_listing_ready,
@@ -412,11 +423,12 @@ def send_booking_to_n8n(payload: dict):
     if N8N_INTAKE_SECRET:
         headers["x-rom-intake-key"] = N8N_INTAKE_SECRET
 
-    # Wrap payload in "body" key as expected by n8n workflow
-    wrapped_payload = {"body": payload}
+    # n8n automatically wraps webhook POST data in $json.body
+    # So we send the payload directly without extra wrapping
+    print(f"[DEBUG] Sending payload with customer.email:", payload.get('customer', {}).get('email'))
 
     try:
-        resp = requests.post(N8N_INTAKE_WEBHOOK_URL, json=wrapped_payload, headers=headers, timeout=15)
+        resp = requests.post(N8N_INTAKE_WEBHOOK_URL, json=payload, headers=headers, timeout=15)
     except requests.exceptions.RequestException as e:
         print(f"n8n intake webhook request failed: {e}")
         raise HTTPException(status_code=502, detail=f"n8n intake webhook unreachable: {e}")
