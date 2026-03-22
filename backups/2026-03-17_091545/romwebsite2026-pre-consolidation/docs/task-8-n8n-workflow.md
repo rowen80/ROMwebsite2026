@@ -153,7 +153,7 @@ Body should include:
 
 ### Node 8 — Append Row to Google Sheets
 Workbook:
-- `ROMwebsite2026_data`
+- `ROM_DATA_2026`
 
 Tab:
 - `2026 FORM_DATA`

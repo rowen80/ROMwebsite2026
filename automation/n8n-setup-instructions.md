@@ -37,12 +37,12 @@ In the workflow, open each email node and update the credential reference:
 
 1. Go to **Settings** → **Credentials** → **Add Credential**
 2. Type: **Google Sheets OAuth2** (or Service Account if you prefer)
-3. Authenticate with the Google account that has edit access to `ROM_DATA_2026`
+3. Authenticate with the Google account that has edit access to `ROMwebsite2026_data`
 4. Name it clearly (e.g. `Google Sheets — ROM Account`)
 
 In the workflow, open **Append Google Sheets Row** and:
 - Set the credential to your Google Sheets credential
-- Set the **Spreadsheet URL or ID** to the actual `ROM_DATA_2026` spreadsheet
+- Set the **Spreadsheet URL or ID** to the actual `ROMwebsite2026_data` spreadsheet (ID: `17L80EjoMc8RQYZwob5I2XtXTY9J0yo73a6P5Fr0noUQ`)
 
 ---
 
@@ -86,7 +86,7 @@ Copy this URL and set it as `N8N_INTAKE_WEBHOOK_URL` in your Render environment.
 
 ## Step 7 — Verify column order in Google Sheets
 
-Before activating, open `ROM_DATA_2026` / `2026 FORM_DATA` and confirm the new right-side columns exist in this order (after `BillingEmail`):
+Before activating, open `ROMwebsite2026_data` / `2026 FORM_DATA` and confirm the new right-side columns exist in this order (after `BillingEmail`):
 
 ```
 BuildingName, Bathrooms, Views, FinishedBasement,
@@ -158,6 +158,6 @@ This logic lives in the **Build Variables** node (JavaScript). If agency names c
 | Build Variables | Normalizes payload, builds computed vars, resolves recipient list |
 | Send Client Confirmation Email | Sends confirmation to `customer.email` |
 | Send Internal Notification Email | Sends to ryan + conditionally rehoboth@penfedrealty.com |
-| Append Google Sheets Row | Writes row to ROM_DATA_2026 / 2026 FORM_DATA |
+| Append Google Sheets Row | Writes row to ROMwebsite2026_data / 2026 FORM_DATA |
 | Return Success Response | Returns structured 200 JSON to Render |
 | Return Sheet Failure Response | Returns 500 JSON if sheet append fails (Render will surface this as 502) |

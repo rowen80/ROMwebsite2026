@@ -10,10 +10,10 @@ Define the first rebuild target for the new request form so implementation can p
 - Rebuilt system will be hosted on Render.
 - Preferred automation path is Render -> n8n -> ROM-owned sheets, pending final pricing/ops confirmation.
 - Confirmation emails must be sent from `ryan.owen@ryanowenphotography.com`.
-- New intake target is `ROMwebsite2026_data`, not the live ROM master workbook.
+- New intake target is `ROM_DATA_2026`, not the live ROM master workbook.
 
 ## Primary workbook target
-Workbook: `ROMwebsite2026_data`
+Workbook: `ROM_DATA_2026`
 Spreadsheet ID: `17L80EjoMc8RQYZwob5I2XtXTY9J0yo73a6P5Fr0noUQ`
 Primary tab for request intake: `2026 FORM_DATA`
 
@@ -92,7 +92,7 @@ For V1, the rebuilt form should append only the subset of columns needed for cle
 
 These remain part of the workbook for consistency but should not be driven by the rebuilt intake flow yet.
 
-## Current form payload fields observed in the `ROMwebsite2026` repo
+## Current form payload fields observed in the WORK repo
 - `first_name`
 - `last_name`
 - `email`
@@ -220,7 +220,7 @@ The rebuilt confirmation email should preserve the current operational feel:
 - No invoice generation.
 - No delivery-link handling.
 - No deep customer/login rewrite.
-- No writes to `ROMwebsite2026_customers` unless explicitly added later (this is a staging copy; the live customer sheet remains untouched).
+- No writes to `ROM_CUSTOMERS_2026` unless explicitly added later.
 
 ## Recommendation for next construction step
 Before implementation, confirm whether V1 should:

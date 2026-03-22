@@ -9,7 +9,7 @@ Client browser
 -> n8n webhook workflow
 ->
   - confirmation email(s)
-  - append row to `ROMwebsite2026_data` -> `2026 FORM_DATA`
+  - append row to `ROM_DATA_2026` -> `2026 FORM_DATA`
 
 ## Hard requirements
 - No writes to the live spreadsheet.
@@ -36,7 +36,7 @@ n8n should:
 - receive the structured payload from Render
 - send the client confirmation email
 - send internal notification email if desired
-- append a new row to `ROMwebsite2026_data` -> `2026 FORM_DATA`
+- append a new row to `ROM_DATA_2026` -> `2026 FORM_DATA`
 - log/branch on success vs failure
 
 ### Google Sheets responsibilities
@@ -273,7 +273,7 @@ Do not over-engineer auto-retry before the first working path exists.
 ## Open decisions
 - exact n8n email transport method for sending as `ryan.owen@ryanowenphotography.com`
 - whether internal notification goes to one or multiple recipients
-- whether `ROMwebsite2026_customers` stays fully read-only in V1 (recommended: yes; this is a staging copy for testing login/customer lookup only)
+- whether `ROM_CUSTOMERS_2026` stays fully read-only in V1 (recommended: yes)
 - whether `BillingEmail` should always equal `ClientEmail` initially (recommended: yes)
 
 ## Recommendation
