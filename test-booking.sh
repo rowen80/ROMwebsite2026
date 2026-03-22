@@ -10,7 +10,7 @@ curl -X POST http://localhost:8001/jobs \
   -d '{
     "first_name": "Test",
     "last_name": "User",
-    "email": "ryan@ryanowenphotography.com",
+    "email": "bardo.faraday@gmail.com",
     "phone": "240-555-0100",
     "agency": "Test Agency",
     "address": "123 Test Street",
@@ -39,6 +39,10 @@ curl -X POST http://localhost:8001/jobs \
 echo ""
 echo ""
 echo "Check results:"
-echo "1. Email at ryan@ryanowenphotography.com"
+echo "1. Email at bardo.faraday@gmail.com (Bardo will verify automatically)"
 echo "2. n8n executions: http://localhost:5678"
 echo "3. Google Sheet: https://docs.google.com/spreadsheets/d/17L80EjoMc8RQYZwob5I2XtXTY9J0yo73a6P5Fr0noUQ/edit"
+echo ""
+echo "Waiting 5 seconds for email delivery..."
+sleep 5
+echo "Checking Bardo's inbox for confirmation email..."
