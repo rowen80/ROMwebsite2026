@@ -412,8 +412,11 @@ def send_booking_to_n8n(payload: dict):
     if N8N_INTAKE_SECRET:
         headers["x-rom-intake-key"] = N8N_INTAKE_SECRET
 
+    # Wrap payload in "body" key as expected by n8n workflow
+    wrapped_payload = {"body": payload}
+
     try:
-        resp = requests.post(N8N_INTAKE_WEBHOOK_URL, json=payload, headers=headers, timeout=15)
+        resp = requests.post(N8N_INTAKE_WEBHOOK_URL, json=wrapped_payload, headers=headers, timeout=15)
     except requests.exceptions.RequestException as e:
         print(f"n8n intake webhook request failed: {e}")
         raise HTTPException(status_code=502, detail=f"n8n intake webhook unreachable: {e}")
@@ -840,7 +843,10 @@ def create_job(job_in: JobCreate):
         db.flush()
 
         n8n_payload = build_n8n_booking_payload(job_in, customer, job, estimate)
-        send_booking_to_n8n(n8n_payload)
+        print(f"[DEBUG] Sending to n8n: {N8N_INTAKE_WEBHOOK_URL}")
+        print(f"[DEBUG] Payload keys: {list(n8n_payload.keys())}")
+        n8n_response = send_booking_to_n8n(n8n_payload)
+        print(f"[DEBUG] n8n response: {n8n_response}")
         db.commit()
 
         return JobResponse(job_id=job.id, customer_id=customer.id, estimate=estimate)
