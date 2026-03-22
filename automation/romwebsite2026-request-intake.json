@@ -1,0 +1,463 @@
+{
+  "name": "romwebsite2026-request-intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "romwebsite2026/request-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [240, 300],
+      "webhookId": "rom-intake-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "secret-check",
+              "leftValue": "={{ $json.headers['x-rom-intake-key'] }}",
+              "rightValue": "={{ $env.ROM_INTAKE_SECRET }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "validate-secret",
+      "name": "Validate Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\"ok\": false, \"error\": \"Unauthorized\", \"message\": \"Invalid or missing intake secret\"} }}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "reject-unauthorized",
+      "name": "Reject Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [680, 480]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-customer-firstname",
+              "leftValue": "={{ $json.body.customer.firstName }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "check-customer-lastname",
+              "leftValue": "={{ $json.body.customer.lastName }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "check-customer-email",
+              "leftValue": "={{ $json.body.customer.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "check-listing-address",
+              "leftValue": "={{ $json.body.listing.address }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "check-services-selected",
+              "leftValue": "={{ $json.body.services.selected.length }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "validate-required-fields",
+      "name": "Validate Required Fields",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 120]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\"ok\": false, \"error\": \"Validation Failed\", \"message\": \"Missing required fields\"} }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "reject-invalid-fields",
+      "name": "Reject Invalid Fields",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "subject",
+              "name": "subject",
+              "value": "={{ \"Photo Request: \" + $json.body.listing.address }}",
+              "type": "string"
+            },
+            {
+              "id": "clientFullName",
+              "name": "clientFullName",
+              "value": "={{ $json.body.customer.firstName + \" \" + $json.body.customer.lastName }}",
+              "type": "string"
+            },
+            {
+              "id": "servicesText",
+              "name": "servicesText",
+              "value": "={{ $json.body.services.selected.join(\", \") }}",
+              "type": "string"
+            },
+            {
+              "id": "viewsText",
+              "name": "viewsText",
+              "value": "={{ ($json.body.services.views || []).join(\", \") || \"N/A\" }}",
+              "type": "string"
+            },
+            {
+              "id": "submittedAt",
+              "name": "submittedAt",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "requestId",
+              "name": "requestId",
+              "value": "={{ $json.body.meta.requestId || \"ROM-\" + $now.toUnixInteger() }}",
+              "type": "string"
+            },
+            {
+              "id": "sourceSystem",
+              "name": "sourceSystem",
+              "value": "romwebsite2026",
+              "type": "string"
+            },
+            {
+              "id": "isVacantText",
+              "name": "isVacantText",
+              "value": "={{ $json.body.timing.isVacant === true ? \"Yes, property is vacant\" : ($json.body.timing.isVacant === false ? \"No, property is occupied\" : \"Not specified\") }}",
+              "type": "string"
+            },
+            {
+              "id": "termsAcceptedText",
+              "name": "termsAcceptedText",
+              "value": "={{ $json.body.flags.termsAccepted === true ? \"Accepted\" : \"Not accepted\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "prepare-variables",
+      "name": "Prepare Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [900, 120]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "internalRecipients",
+              "name": "internalRecipients",
+              "value": "={{ \n  const agency = $json.body.customer.agency || \"\";\n  let recipients = [\"ryan@ryanowenphotography.com\"];\n  \n  if (agency === \"PenFed Gallo Realty\" || agency === \"LeeAnn Group\") {\n    recipients.push(\"rehoboth@penfedrealty.com\");\n  }\n  \n  return recipients.join(\", \");\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "determine-recipients",
+      "name": "Determine Recipients",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1120, 120]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "sendTo": "={{ $json.body.customer.email }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ \"Hello \" + $json.clientFullName + \",\\n\\nThank you for your photo request. Your submission has been recorded below. We will review the information and get back to you with potential dates and times at our next opportunity. Your place in line has been saved. Please make sure to \\\"reply all\\\" (if applicable), so that everybody will have access to any notes and discussions regarding this photo shoot. Thank you again!\\n\\nEstimate (Final Amount Subject to Change):\\n\" + $json.body.estimate.lineItemsText + \"\\nTotal: $\" + $json.body.estimate.estimatedTotal + \"\\n\\n---------\\n\\nAddress:\\n\" + ($json.body.listing.buildingName || \"N/A\") + \"\\n\" + $json.body.listing.address + \"\\n\" + $json.body.listing.city + \"\\nBedrooms: \" + ($json.body.listing.bedrooms || \"N/A\") + \"\\nBathrooms: \" + ($json.body.listing.bathrooms || \"N/A\") + \"\\nSq Ft: \" + ($json.body.listing.listingSize || \"N/A\") + \"\\nFinished Basement: \" + ($json.body.services.finishedBasement || \"N/A\") + \"\\nViews: \" + $json.viewsText + \"\\nList Price: \" + ($json.body.listing.estimatedPriceBand || \"N/A\") + \"\\n\\n---------\\n\\nAgent:\\n\" + $json.clientFullName + \"\\n\" + $json.body.customer.email + \"\\n\" + ($json.body.customer.phone || \"N/A\") + \"\\n\" + ($json.body.listing.usage || \"N/A\") + \"\\n\" + ($json.body.customer.agency || \"N/A\") + \"\\n\\n----------\\n\\nDate Listing will be Ready: \" + ($json.body.timing.dateListingReady || \"N/A\") + \"\\n\" + $json.isVacantText + \"\\nDate To go Live: \" + ($json.body.timing.dateToGoLive || \"N/A\") + \"\\nDesired Date: \" + ($json.body.timing.desiredDate || \"N/A\") + \"\\n\\n-----------\\n\\nNotes:\\n\" + ($json.body.services.notesForPhotographer || \"None\") + \"\\n\\n------------\\n\\nAccess To the Property:\\n\" + ($json.body.access.accessType || \"N/A\") + \"\\nCode: \" + ($json.body.access.accessCode || \"N/A\") + \"\\nOwner Info: \" + ($json.body.access.ownerContactInfo || \"N/A\") + \"\\nDuring Shoot Agreement: \" + ($json.body.timing.duringShootAgreement || \"N/A\") + \"\\nTerms of Service: \" + $json.termsAcceptedText + \"\\n\\nThank you!\\n\\nRyan Owen\\n240-401-8385\\nwww.ryanowenphotography.com\\n\\n*** In order to give every project my full attention, I cannot respond to emails or texts while I am shooting. Thank you for your patience. ***\" }}",
+        "options": {
+          "ccList": "={{ $json.internalRecipients }}",
+          "senderName": "Ryan Owen Photography"
+        }
+      },
+      "id": "send-client-confirmation",
+      "name": "Send Client Confirmation",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1340, 120],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GMAIL_CREDENTIAL_ID",
+          "name": "Gmail OAuth2 (ryan.owen@ryanowenphotography.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "sendTo": "={{ $json.internalRecipients }}",
+        "subject": "={{ \"New Photo Request: \" + $json.body.listing.address + \" - \" + $json.clientFullName }}",
+        "emailType": "text",
+        "message": "={{ \"New photo request received:\\n\\nRequest ID: \" + $json.requestId + \"\\nSubmitted At: \" + $json.submittedAt + \"\\nSource System: \" + $json.sourceSystem + \"\\n\\n---------\\n\\nAddress:\\n\" + ($json.body.listing.buildingName || \"N/A\") + \"\\n\" + $json.body.listing.address + \"\\n\" + $json.body.listing.city + \"\\nBedrooms: \" + ($json.body.listing.bedrooms || \"N/A\") + \"\\nBathrooms: \" + ($json.body.listing.bathrooms || \"N/A\") + \"\\nSq Ft: \" + ($json.body.listing.listingSize || \"N/A\") + \"\\nFinished Basement: \" + ($json.body.services.finishedBasement || \"N/A\") + \"\\nViews: \" + $json.viewsText + \"\\nList Price: \" + ($json.body.listing.estimatedPriceBand || \"N/A\") + \"\\n\\n---------\\n\\nAgent:\\n\" + $json.clientFullName + \"\\n\" + $json.body.customer.email + \"\\n\" + ($json.body.customer.phone || \"N/A\") + \"\\n\" + ($json.body.listing.usage || \"N/A\") + \"\\n\" + ($json.body.customer.agency || \"N/A\") + \"\\n\\n---------\\n\\nServices:\\n\" + $json.servicesText + \"\\n\\nEstimate:\\n\" + $json.body.estimate.lineItemsText + \"\\nTotal: $\" + $json.body.estimate.estimatedTotal + \"\\n\\n----------\\n\\nDate Listing will be Ready: \" + ($json.body.timing.dateListingReady || \"N/A\") + \"\\n\" + $json.isVacantText + \"\\nDate To go Live: \" + ($json.body.timing.dateToGoLive || \"N/A\") + \"\\nDesired Date: \" + ($json.body.timing.desiredDate || \"N/A\") + \"\\n\\n-----------\\n\\nNotes:\\n\" + ($json.body.services.notesForPhotographer || \"None\") + \"\\n\\n------------\\n\\nAccess To the Property:\\n\" + ($json.body.access.accessType || \"N/A\") + \"\\nCode: \" + ($json.body.access.accessCode || \"N/A\") + \"\\nOwner Info: \" + ($json.body.access.ownerContactInfo || \"N/A\") + \"\\nDuring Shoot Agreement: \" + ($json.body.timing.duringShootAgreement || \"N/A\") + \"\\nTerms of Service: \" + $json.termsAcceptedText }}",
+        "options": {
+          "senderName": "ROM Request System"
+        }
+      },
+      "id": "send-internal-notification",
+      "name": "Send Internal Notification",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1560, 120],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GMAIL_CREDENTIAL_ID",
+          "name": "Gmail OAuth2 (ryan.owen@ryanowenphotography.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "17L80EjoMc8RQYZwob5I2XtXTY9J0yo73a6P5Fr0noUQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "2026 FORM_DATA",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SubmittedAt": "={{ $json.submittedAt }}",
+            "ClientFirstName": "={{ $json.body.customer.firstName }}",
+            "ClientLastName": "={{ $json.body.customer.lastName }}",
+            "ClientEmail": "={{ $json.body.customer.email }}",
+            "ClientPhone": "={{ $json.body.customer.phone || \"\" }}",
+            "Company": "={{ $json.body.customer.agency || \"\" }}",
+            "Bedrooms": "={{ $json.body.listing.bedrooms || \"\" }}",
+            "List Price": "={{ $json.body.listing.estimatedPriceBand || \"\" }}",
+            "Sq Ft": "={{ $json.body.listing.listingSize || \"\" }}",
+            "Listing Address": "={{ $json.body.listing.address }}",
+            "City": "={{ $json.body.listing.city || \"\" }}",
+            "Sales/Rentals": "={{ $json.body.listing.usage || \"\" }}",
+            "Service": "={{ $json.servicesText }}",
+            "Estimated Line Items": "={{ $json.body.estimate.lineItemsText }}",
+            "Estimated Total": "={{ $json.body.estimate.estimatedTotal }}",
+            "BillingEmail": "={{ $json.body.customer.billingEmail || $json.body.customer.email }}",
+            "BuildingName": "={{ $json.body.listing.buildingName || \"\" }}",
+            "Bathrooms": "={{ $json.body.listing.bathrooms || \"\" }}",
+            "Views": "={{ $json.viewsText }}",
+            "FinishedBasement": "={{ $json.body.services.finishedBasement || \"\" }}",
+            "DateListingReady": "={{ $json.body.timing.dateListingReady || \"\" }}",
+            "DateToGoLive": "={{ $json.body.timing.dateToGoLive || \"\" }}",
+            "DesiredDate": "={{ $json.body.timing.desiredDate || \"\" }}",
+            "IsVacant": "={{ $json.body.timing.isVacant === true ? \"Yes\" : ($json.body.timing.isVacant === false ? \"No\" : \"\") }}",
+            "DuringShootAgreement": "={{ $json.body.timing.duringShootAgreement || \"\" }}",
+            "AccessType": "={{ $json.body.access.accessType || \"\" }}",
+            "AccessCode": "={{ $json.body.access.accessCode || \"\" }}",
+            "OwnerContactInfo": "={{ $json.body.access.ownerContactInfo || \"\" }}",
+            "PhotographerNotes": "={{ $json.body.services.notesForPhotographer || \"\" }}",
+            "TermsAccepted": "={{ $json.termsAcceptedText }}",
+            "SourceSystem": "={{ $json.sourceSystem }}",
+            "RequestId": "={{ $json.requestId }}",
+            "ConfirmationEmailStatus": "SENT",
+            "InternalEmailStatus": "SENT"
+          }
+        },
+        "options": {}
+      },
+      "id": "append-to-sheet",
+      "name": "Append to Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [1780, 120],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"ok\": true,\n  \"requestId\": $json.requestId,\n  \"clientEmailStatus\": \"SENT\",\n  \"internalEmailStatus\": \"SENT\",\n  \"sheetWriteStatus\": \"APPENDED\",\n  \"submittedAt\": $json.submittedAt\n} }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2000, 120]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Secret": {
+      "main": [
+        [
+          {
+            "node": "Validate Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Required Fields": {
+      "main": [
+        [
+          {
+            "node": "Prepare Variables",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject Invalid Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Variables": {
+      "main": [
+        [
+          {
+            "node": "Determine Recipients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determine Recipients": {
+      "main": [
+        [
+          {
+            "node": "Send Client Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Client Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Send Internal Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Internal Notification": {
+      "main": [
+        [
+          {
+            "node": "Append to Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append to Google Sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
