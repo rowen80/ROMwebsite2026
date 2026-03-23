@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact – Ryan Owen Photography</title>
+  <meta name="description" content="Contact Ryan Owen Photography. Ocean City, MD real estate photographer. 240-401-8385." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html" aria-label="Ryan Owen Photography Home">
+      <img class="brand-logo" src="images/ROM_logo.webp" alt="Ryan Owen Photography" />
+    </a>
+    <button class="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">&#9776;</button>
+    <nav id="site-nav" class="site-nav" aria-label="Primary">
+      <a href="portfolio.html">Portfolio</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="stock.html">Stock</a>
+      <a href="https://githubrequestform.onrender.com" target="_blank" rel="noopener">Photography Request</a>
+      <a href="contact.html" class="active">Contact</a>
+      <a class="phone-link" href="tel:+12404018385">240-401-8385</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== PAGE HERO ===== -->
+<div class="page-hero">
+  <div class="container">
+    <h1>Contact</h1>
+    <p>For a quote, use the Photography Request form. For general inquiries, reach out directly by phone or email.</p>
+  </div>
+</div>
+
+<!-- ===== CONTACT BODY ===== -->
+<section class="section">
+  <div class="container">
+    <div class="contact-layout">
+
+      <!-- Left: contact info -->
+      <div class="contact-info">
+        <h2>Get in Touch</h2>
+
+        <div class="contact-detail">
+          <span class="contact-detail-label">Phone</span>
+          <a href="tel:+12404018385">240-401-8385</a>
+        </div>
+
+        <div class="contact-detail">
+          <span class="contact-detail-label">Email</span>
+          <a href="mailto:ryan@ryanowenphotography.com">ryan@ryanowenphotography.com</a>
+        </div>
+
+        <div class="contact-detail">
+          <span class="contact-detail-label">Address</span>
+          <span>7805 Coastal Highway<br />Ocean City, MD 21842</span>
+        </div>
+
+        <div class="contact-social">
+          <a href="https://www.instagram.com/ryanowenphoto" target="_blank" rel="noopener" class="social-link">Instagram</a>
+          <a href="https://www.facebook.com/ryanowenphotographydesign" target="_blank" rel="noopener" class="social-link">Facebook</a>
+        </div>
+
+        <p style="margin-top:28px;font-size:0.88rem;color:var(--color-muted);line-height:1.7;">
+          <strong style="color:var(--color-text);">Please note:</strong> Ryan cannot respond to emails or texts while on a shoot. If you have a time-sensitive inquiry, calling is the fastest option. Emails are typically returned within one business day.
+        </p>
+      </div>
+
+      <!-- Right: request CTA -->
+      <div class="contact-form-wrap">
+        <div class="request-cta-box">
+          <h3>Request Photography</h3>
+          <p>For a quote on photography, drone, video, or any other service, please use the Photography Request form. Select your services, fill in the property details, and a detailed estimate will be returned promptly.</p>
+          <a href="https://githubrequestform.onrender.com" class="btn" target="_blank" rel="noopener">Photography Request Form</a>
+        </div>
+
+        <div class="request-cta-box" style="margin-top:20px;background:#fff;">
+          <h3>Stock Photography Licensing</h3>
+          <p>Interested in licensing Eastern Shore stock photography for a listing, advertisement, or publication? Contact us directly with your intended use and we'll provide options and pricing.</p>
+          <a href="mailto:ryan@ryanowenphotography.com?subject=Stock%20Photography%20Inquiry" class="btn btn-outline">Email About Stock</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="brand-name">Ryan Owen Photography</div>
+      <div class="brand-tagline">Real Estate Photographer</div>
+      <p style="font-size:0.85rem;">Eastern Shore Maryland &amp; Delaware</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="stock.html">Stock Photography</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="https://githubrequestform.onrender.com" target="_blank" rel="noopener">Photography Request</a></li>
+      </ul>
+    </div>
+    <div class="footer-col footer-contact">
+      <h4>Contact</h4>
+      <p>
+        <a href="mailto:ryan@ryanowenphotography.com">ryan@ryanowenphotography.com</a><br />
+        <a href="tel:+12404018385">240-401-8385</a><br /><br />
+        7805 Coastal Highway<br />
+        Ocean City, MD 21842
+      </p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Ryan Owen Media Inc. All rights reserved.</span>
+    <span><a href="terms.html">Terms &amp; Conditions</a></span>
+  </div>
+</footer>
+
+<script>
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.querySelector('.site-nav');
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', isOpen);
+    });
+    document.addEventListener('click', (e) => {
+      if (!nav.classList.contains('open')) return;
+      if (nav.contains(e.target) || toggle.contains(e.target)) return;
+      nav.classList.remove('open');
+      toggle.setAttribute('aria-expanded', false);
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portfolio – Ryan Owen Photography</title>
+  <meta name="description" content="Real estate photography, drone, video, and fine art portfolio — Ryan Owen Photography, Ocean City, MD." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .gallery-item { cursor: pointer; }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 88vh;
+      object-fit: contain;
+      display: block;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 20px; right: 24px;
+      color: #fff;
+      font-size: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .lightbox-prev, .lightbox-next {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      color: #fff;
+      font-size: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 12px;
+      user-select: none;
+    }
+    .lightbox-prev { left: 12px; }
+    .lightbox-next { right: 12px; }
+
+    /* Filter hide/show */
+    .gallery-item[data-hidden="true"] { display: none; }
+
+    /* Placeholder for upcoming images */
+    .gallery-placeholder-block {
+      grid-column: 1 / -1;
+      padding: 48px 24px;
+      text-align: center;
+      border: 2px dashed var(--color-border-mid);
+      color: var(--color-light);
+    }
+    .gallery-placeholder-block p { font-size: 0.9rem; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html" aria-label="Ryan Owen Photography Home">
+      <img class="brand-logo" src="images/ROM_logo.webp" alt="Ryan Owen Photography" />
+    </a>
+    <button class="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">&#9776;</button>
+    <nav id="site-nav" class="site-nav" aria-label="Primary">
+      <a href="portfolio.html" class="active">Portfolio</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="stock.html">Stock</a>
+      <a href="https://githubrequestform.onrender.com" target="_blank" rel="noopener">Photography Request</a>
+      <a href="contact.html">Contact</a>
+      <a class="phone-link" href="tel:+12404018385">240-401-8385</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== PAGE HERO ===== -->
+<div class="page-hero">
+  <div class="container">
+    <h1>Portfolio</h1>
+    <p>Real estate photography, aerial drone, twilight, video, and fine art from the Eastern Shore of Maryland and Delaware.</p>
+  </div>
+</div>
+
+<!-- ===== GALLERY ===== -->
+<section class="section-sm">
+  <div class="container">
+
+    <!-- Filter buttons -->
+    <div class="portfolio-filter" id="filter-bar">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="real-estate">Real Estate</button>
+      <button class="filter-btn" data-filter="twilight">Twilight</button>
+      <button class="filter-btn" data-filter="fine-art">Fine Art</button>
+    </div>
+
+    <!-- Gallery grid -->
+    <!-- TO ADD NEW IMAGES: drop files into site/images/portfolio/ and add a .gallery-item div below.
+         data-cat options: real-estate | twilight | drone | fine-art -->
+    <div class="gallery-grid" id="gallery">
+
+      <!-- REAL ESTATE -->
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-tenley-interior.jpg" alt="Interior real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-james-landing-01.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-james-landing-02.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-james-landing-03.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-bayshore-01.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-bayshore-03.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-belmont-03.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-hyatt-01.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-hyatt-02.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-isaacs-02.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-isaacs-04.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-hollymount-01.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-hollymount-03.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-gateway-01.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-gateway-02.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-turville-01.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-turville-02.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-park-bath.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-pintail-dining.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="real-estate" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/re-ssi.jpg" alt="Real estate photography" loading="lazy" />
+      </div>
+
+      <!-- TWILIGHT -->
+      <div class="gallery-item" data-cat="twilight" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/twilight-bay.jpg" alt="Twilight real estate photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="twilight" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/twilight-bouchaine.jpg" alt="Twilight photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="twilight" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/twilight-napa-riverfront.jpg" alt="Twilight photography" loading="lazy" />
+      </div>
+
+      <!-- FINE ART -->
+      <div class="gallery-item" data-cat="fine-art" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/fine-art-shore-01.jpg" alt="Fine art photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="fine-art" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/fine-art-shore-02.jpg" alt="Fine art photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="fine-art" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/fine-art-canal-01.jpg" alt="Fine art photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="fine-art" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/fine-art-canal-02.jpg" alt="Fine art photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="fine-art" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/fine-art-inlet.jpg" alt="Fine art photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="fine-art" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/fine-art-el-farallon-01.jpg" alt="Fine art photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="fine-art" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/fine-art-el-farallon-02.jpg" alt="Fine art photography" loading="lazy" />
+      </div>
+      <div class="gallery-item" data-cat="fine-art" tabindex="0" role="button" aria-label="View image">
+        <img src="images/portfolio/fine-art-el-tunco.jpg" alt="Fine art photography" loading="lazy" />
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-band">
+  <div class="container">
+    <div class="section-label">Ready to Book</div>
+    <h2>Get Your Listing in the Portfolio</h2>
+    <p>Fill out the Photography Request to receive a same-day estimate.</p>
+    <a href="https://githubrequestform.onrender.com" class="btn" target="_blank" rel="noopener">Photography Request</a>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="brand-name">Ryan Owen Photography</div>
+      <div class="brand-tagline">Real Estate Photographer</div>
+      <p style="font-size:0.85rem;">Eastern Shore Maryland &amp; Delaware</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="stock.html">Stock Photography</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="https://githubrequestform.onrender.com" target="_blank" rel="noopener">Photography Request</a></li>
+      </ul>
+    </div>
+    <div class="footer-col footer-contact">
+      <h4>Contact</h4>
+      <p>
+        <a href="mailto:ryan@ryanowenphotography.com">ryan@ryanowenphotography.com</a><br />
+        <a href="tel:+12404018385">240-401-8385</a><br /><br />
+        7805 Coastal Highway<br />
+        Ocean City, MD 21842
+      </p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Ryan Owen Media Inc. All rights reserved.</span>
+    <span><a href="terms.html">Terms &amp; Conditions</a></span>
+  </div>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="lightbox-close" id="lb-close" aria-label="Close">&times;</button>
+  <button class="lightbox-prev" id="lb-prev" aria-label="Previous">&#8249;</button>
+  <img id="lb-img" src="" alt="" />
+  <button class="lightbox-next" id="lb-next" aria-label="Next">&#8250;</button>
+</div>
+
+<script>
+  // ---- Nav toggle ----
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.querySelector('.site-nav');
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', isOpen);
+    });
+    document.addEventListener('click', (e) => {
+      if (!nav.classList.contains('open')) return;
+      if (nav.contains(e.target) || toggle.contains(e.target)) return;
+      nav.classList.remove('open');
+      toggle.setAttribute('aria-expanded', false);
+    });
+  }
+
+  // ---- Filter ----
+  const filterBar = document.getElementById('filter-bar');
+  const items = Array.from(document.querySelectorAll('.gallery-item'));
+
+  filterBar.addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    items.forEach(item => {
+      const match = filter === 'all' || item.dataset.cat === filter;
+      item.dataset.hidden = match ? 'false' : 'true';
+    });
+  });
+
+  // ---- Lightbox ----
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  let visibleItems = [];
+  let currentIdx = 0;
+
+  function getVisible() {
+    return items.filter(i => i.dataset.hidden !== 'true');
+  }
+
+  function openLightbox(idx) {
+    visibleItems = getVisible();
+    currentIdx = idx;
+    lbImg.src = visibleItems[currentIdx].querySelector('img').src;
+    lbImg.alt = visibleItems[currentIdx].querySelector('img').alt;
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  items.forEach((item, i) => {
+    item.addEventListener('click', () => {
+      const vis = getVisible();
+      const visIdx = vis.indexOf(item);
+      if (visIdx >= 0) openLightbox(visIdx);
+    });
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
+    });
+  });
+
+  document.getElementById('lb-close').addEventListener('click', closeLightbox);
+  document.getElementById('lb-prev').addEventListener('click', () => {
+    visibleItems = getVisible();
+    currentIdx = (currentIdx - 1 + visibleItems.length) % visibleItems.length;
+    lbImg.src = visibleItems[currentIdx].querySelector('img').src;
+    lbImg.alt = visibleItems[currentIdx].querySelector('img').alt;
+  });
+  document.getElementById('lb-next').addEventListener('click', () => {
+    visibleItems = getVisible();
+    currentIdx = (currentIdx + 1) % visibleItems.length;
+    lbImg.src = visibleItems[currentIdx].querySelector('img').src;
+    lbImg.alt = visibleItems[currentIdx].querySelector('img').alt;
+  });
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') document.getElementById('lb-prev').click();
+    if (e.key === 'ArrowRight') document.getElementById('lb-next').click();
+  });
+</script>
+</body>
+</html>

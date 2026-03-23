@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stock Photography – Ryan Owen Photography</title>
+  <meta name="description" content="Stock photography collections from Bethany Beach, Fenwick Island, Lewes, Ocean City, and Rehoboth Beach. Available for purchase." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html" aria-label="Ryan Owen Photography Home">
+      <img class="brand-logo" src="images/ROM_logo.webp" alt="Ryan Owen Photography" />
+    </a>
+    <button class="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">&#9776;</button>
+    <nav id="site-nav" class="site-nav" aria-label="Primary">
+      <a href="portfolio.html">Portfolio</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="stock.html" class="active">Stock</a>
+      <a href="https://githubrequestform.onrender.com" target="_blank" rel="noopener">Photography Request</a>
+      <a href="contact.html">Contact</a>
+      <a class="phone-link" href="tel:+12404018385">240-401-8385</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== PAGE HERO ===== -->
+<div class="page-hero">
+  <div class="container">
+    <h1>Stock Photography</h1>
+    <p>High-quality stock photos of the Eastern Shore, available for purchase to enhance listings, promotional materials, and printed pieces.</p>
+  </div>
+</div>
+
+<!-- ===== INTRO ===== -->
+<section class="section-sm">
+  <div class="container">
+    <p class="services-intro">These images represent countless hours of planning — waking up at 4:00&nbsp;am in the freezing cold to be set up for sunrise, scouting locations, and waiting on the right weather. They're available for licensing to agents, businesses, and publications needing premium Eastern Shore imagery. Contact us for licensing inquiries and pricing.</p>
+
+    <div class="stock-grid">
+
+      <a class="stock-card" href="stock-ocean-city.html" aria-label="Ocean City, MD stock photography">
+        <div class="stock-card-img">
+          <img src="images/stock/ocean-city/OCInletSunrise-10-11.jpg" alt="Ocean City, MD" loading="lazy" />
+        </div>
+        <div class="stock-card-label">Ocean City, MD</div>
+      </a>
+
+      <a class="stock-card" href="stock-bethany-beach.html" aria-label="Bethany Beach, DE stock photography">
+        <div class="stock-card-img">
+          <img src="images/stock/bethany-beach/BethanyBeachSunset2023-1-1.jpg" alt="Bethany Beach, DE" loading="lazy" />
+        </div>
+        <div class="stock-card-label">Bethany Beach, DE</div>
+      </a>
+
+      <a class="stock-card" href="stock-rehoboth-beach.html" aria-label="Rehoboth Beach, DE stock photography">
+        <div class="stock-card-img">
+          <img src="images/stock/rehoboth-beach/RehobothBoardwalkSunrise-1-6.jpg" alt="Rehoboth Beach, DE" loading="lazy" />
+        </div>
+        <div class="stock-card-label">Rehoboth Beach, DE</div>
+      </a>
+
+      <a class="stock-card" href="stock-fenwick-island.html" aria-label="Fenwick Island, DE stock photography">
+        <div class="stock-card-img">
+          <img src="images/stock/fenwick-island/Lighthouse-4926-6.jpg" alt="Fenwick Island, DE" loading="lazy" />
+        </div>
+        <div class="stock-card-label">Fenwick Island, DE</div>
+      </a>
+
+      <a class="stock-card" href="stock-lewes.html" aria-label="Lewes, DE stock photography">
+        <div class="stock-card-img">
+          <img src="images/stock/lewes/_LewesSunrisePierLighthousesBlurs2023-6-1.jpg" alt="Lewes, DE" loading="lazy" />
+        </div>
+        <div class="stock-card-label">Lewes, DE</div>
+      </a>
+
+    </div>
+
+    <p style="margin-top:32px;font-size:0.9rem;color:var(--color-muted);">
+      Click any collection to browse images. To license a specific image, <a href="contact.html" style="color:var(--color-text);font-weight:600;">contact us</a> with your intended use and we will provide options and pricing.
+    </p>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="brand-name">Ryan Owen Photography</div>
+      <div class="brand-tagline">Real Estate Photographer</div>
+      <p style="font-size:0.85rem;">Eastern Shore Maryland &amp; Delaware</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="stock.html">Stock Photography</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="https://githubrequestform.onrender.com" target="_blank" rel="noopener">Photography Request</a></li>
+      </ul>
+    </div>
+    <div class="footer-col footer-contact">
+      <h4>Contact</h4>
+      <p>
+        <a href="mailto:ryan@ryanowenphotography.com">ryan@ryanowenphotography.com</a><br />
+        <a href="tel:+12404018385">240-401-8385</a><br /><br />
+        7805 Coastal Highway<br />
+        Ocean City, MD 21842
+      </p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Ryan Owen Media Inc. All rights reserved.</span>
+    <span><a href="terms.html">Terms &amp; Conditions</a></span>
+  </div>
+</footer>
+
+<script>
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.querySelector('.site-nav');
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', isOpen);
+    });
+    document.addEventListener('click', (e) => {
+      if (!nav.classList.contains('open')) return;
+      if (nav.contains(e.target) || toggle.contains(e.target)) return;
+      nav.classList.remove('open');
+      toggle.setAttribute('aria-expanded', false);
+    });
+  }
+</script>
+</body>
+</html>
