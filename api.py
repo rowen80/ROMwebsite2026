@@ -807,6 +807,7 @@ def options_jobs():
 
 
 @app.get("/", response_class=HTMLResponse)
+@app.get("/booking_form.html", response_class=HTMLResponse)
 def booking_form():
     """
     Serve the booking form HTML from the same origin as the API.
