@@ -53,6 +53,9 @@ def startup_event():
 # Serve static files (e.g. /static/image.jpg)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Serve the main website pages
+app.mount("/site", StaticFiles(directory="site", html=True), name="site")
+
 origins = [
     "http://127.0.0.1:8001",
     "http://localhost:8001",
