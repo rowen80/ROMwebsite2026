@@ -424,7 +424,7 @@ def send_booking_to_n8n(payload: dict):
 
     headers = {"Content-Type": "application/json"}
     if N8N_INTAKE_SECRET:
-        headers["x-rom-intake-key"] = N8N_INTAKE_SECRET
+        headers["X-N8N-Secret"] = N8N_INTAKE_SECRET
 
     # n8n automatically wraps webhook POST data in $json.body
     # So we send the payload directly without extra wrapping

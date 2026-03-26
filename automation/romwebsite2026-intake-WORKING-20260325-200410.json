@@ -8,11 +8,14 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "webhook-node",
+      "id": "ca8e2b01-ef4c-4e30-b47f-8357bc79852c",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [240, 300],
+      "position": [
+        -448,
+        192
+      ],
       "webhookId": "rom-intake-webhook"
     },
     {
@@ -35,13 +38,17 @@
             }
           ],
           "combinator": "and"
-        }
+        },
+        "options": {}
       },
-      "id": "validate-secret-node",
+      "id": "60386b71-53ac-4532-ab35-064169afdeed",
       "name": "Validate Secret",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [460, 300]
+      "position": [
+        -224,
+        192
+      ]
     },
     {
       "parameters": {
@@ -51,11 +58,14 @@
           "responseCode": 401
         }
       },
-      "id": "reject-unauthorized-node",
+      "id": "f43c59c5-452b-42ad-bc91-9a1bbc24279a",
       "name": "Reject Unauthorized",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [680, 480]
+      "position": [
+        0,
+        368
+      ]
     },
     {
       "parameters": {
@@ -95,13 +105,17 @@
             }
           ],
           "combinator": "and"
-        }
+        },
+        "options": {}
       },
-      "id": "validate-fields-node",
+      "id": "8ed8112b-a486-41f9-a134-270d7790ad67",
       "name": "Validate Required Fields",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [680, 120]
+      "position": [
+        0,
+        0
+      ]
     },
     {
       "parameters": {
@@ -111,15 +125,17 @@
           "responseCode": 422
         }
       },
-      "id": "reject-invalid-node",
+      "id": "6d8a50d8-a80b-4391-9a04-e021a4c14430",
       "name": "Reject Invalid Fields",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [900, 300]
+      "position": [
+        224,
+        192
+      ]
     },
     {
       "parameters": {
-        "authentication": "oAuth2",
         "sendTo": "={{ $json.body.customer.email }}",
         "subject": "={{ \"Photo Request: \" + $json.body.listing.address }}",
         "emailType": "text",
@@ -128,36 +144,19 @@
           "ccList": "ryan@ryanowenphotography.com"
         }
       },
-      "id": "send-client-email-node",
+      "id": "65f7d5c2-2401-466e-b820-55a945fa9329",
       "name": "Send Client Email",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [1120, 120],
+      "position": [
+        448,
+        0
+      ],
+      "webhookId": "8bc48425-c9ad-4f1c-9197-5858930ad085",
       "credentials": {
         "gmailOAuth2": {
-          "id": "YOUR_GMAIL_CREDENTIAL_ID",
-          "name": "Gmail account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "authentication": "oAuth2",
-        "sendTo": "ryan@ryanowenphotography.com",
-        "subject": "={{ \"New Photo Request: \" + $json.body.listing.address + \" - \" + $json.body.customer.firstName + \" \" + $json.body.customer.lastName }}",
-        "emailType": "text",
-        "message": "={{ \"NEW PHOTO REQUEST\\nRequest ID: \" + ($json.body.meta.requestId || \"N/A\") + \"\\nSubmitted At: \" + ($json.body.meta.submittedAt || \"N/A\") + \"\\nSource: romwebsite2026\\n\\nClient: \" + $json.body.customer.firstName + \" \" + $json.body.customer.lastName + \"\\nEmail: \" + $json.body.customer.email + \"\\nPhone: \" + ($json.body.customer.phone || \"N/A\") + \"\\nAgency: \" + ($json.body.customer.agency || \"N/A\") + \"\\n\\nAddress: \" + $json.body.listing.address + \"\\nCity: \" + $json.body.listing.city + \"\\nBedrooms: \" + ($json.body.listing.bedrooms || \"N/A\") + \"\\nBathrooms: \" + ($json.body.listing.bathrooms || \"N/A\") + \"\\nSq Ft: \" + ($json.body.listing.listingSize || \"N/A\") + \"\\n\\nServices: \" + (Array.isArray($json.body.services.selected) ? $json.body.services.selected.join(\", \") : String($json.body.services.selected || \"N/A\")) + \"\\n\\nEstimate:\\n\" + $json.body.estimate.lineItemsText + \"\\nTotal: $\" + $json.body.estimate.estimatedTotal }}",
-        "options": {}
-      },
-      "id": "send-internal-email-node",
-      "name": "Send Internal Email",
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.1,
-      "position": [1340, 120],
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "YOUR_GMAIL_CREDENTIAL_ID",
-          "name": "Gmail account"
+          "id": "Aw4STdDise05gjzE",
+          "name": "Gmail account 2"
         }
       }
     },
@@ -197,15 +196,18 @@
         },
         "options": {}
       },
-      "id": "append-sheet-node",
+      "id": "42892409-205b-410e-aaf4-7443fa3be0aa",
       "name": "Append to Sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [1560, 120],
+      "position": [
+        880,
+        0
+      ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "YOUR_SHEETS_CREDENTIAL_ID",
-          "name": "Google Sheets account"
+          "id": "4NFFohHeOIKuQM0a",
+          "name": "Google Sheets account 2"
         }
       }
     },
@@ -217,13 +219,17 @@
           "responseCode": 200
         }
       },
-      "id": "respond-success-node",
+      "id": "cfc82868-758a-452c-8bda-667cb97cccfb",
       "name": "Respond Success",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [1780, 120]
+      "position": [
+        1104,
+        0
+      ]
     }
   ],
+  "pinData": {},
   "connections": {
     "Webhook": {
       "main": [
@@ -276,17 +282,6 @@
       "main": [
         [
           {
-            "node": "Send Internal Email",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send Internal Email": {
-      "main": [
-        [
-          {
             "node": "Append to Sheet",
             "type": "main",
             "index": 0
@@ -306,7 +301,16 @@
       ]
     }
   },
+  "active": false,
   "settings": {
-    "executionOrder": "v1"
-  }
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ed845c1d-76bd-421a-b9fe-53714d6824d7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0a0408ada9decc18d7dc68e3e27778ce1df6c23b77d8a89a9e3ce6de120040e0"
+  },
+  "id": "gAkL7pzePvWMIX2G",
+  "tags": []
 }
