@@ -425,9 +425,13 @@ def send_booking_to_n8n(payload: dict):
     headers = {"Content-Type": "application/json"}
     if N8N_INTAKE_SECRET:
         headers["X-N8N-Secret"] = N8N_INTAKE_SECRET
+        print(f"[DEBUG] N8N_INTAKE_SECRET is set: {N8N_INTAKE_SECRET[:8]}...")
+    else:
+        print(f"[DEBUG] WARNING: N8N_INTAKE_SECRET is NOT set!")
 
     # n8n automatically wraps webhook POST data in $json.body
     # So we send the payload directly without extra wrapping
+    print(f"[DEBUG] Headers being sent: {headers}")
     print(f"[DEBUG] Sending payload with customer.email:", payload.get('customer', {}).get('email'))
 
     try:

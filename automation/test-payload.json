@@ -1,0 +1,45 @@
+{
+  "body": {
+    "meta": {
+      "submittedAt": "2026-03-25T20:21:00Z",
+      "requestId": "test-req-20260325-202100"
+    },
+    "customer": {
+      "firstName": "Jane",
+      "lastName": "Testington",
+      "email": "jane.test@example.com",
+      "phone": "410-555-0123",
+      "agency": "Test Realty Group"
+    },
+    "listing": {
+      "address": "123 Test Street",
+      "city": "Ocean City",
+      "buildingName": "Seaside Condos",
+      "bedrooms": "3",
+      "bathrooms": "2",
+      "listingSize": "1800",
+      "estimatedPriceBand": "$450,000 - $500,000",
+      "usage": "Sales"
+    },
+    "services": {
+      "selected": ["Interior Photos", "Exterior Photos", "Drone"],
+      "finishedBasement": "No",
+      "notesForPhotographer": "Please photograph during golden hour if possible"
+    },
+    "estimate": {
+      "lineItemsText": "Interior Photos: $200\nExterior Photos: $100\nDrone: $150",
+      "estimatedTotal": "450"
+    },
+    "timing": {
+      "dateListingReady": "2026-04-01",
+      "isVacant": "Yes",
+      "dateToGoLive": "2026-04-05",
+      "desiredDate": "2026-04-02"
+    },
+    "access": {
+      "accessType": "Lockbox",
+      "accessCode": "1234#",
+      "ownerContactInfo": "Jane Testington 410-555-0123"
+    }
+  }
+}

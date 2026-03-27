@@ -1,0 +1,316 @@
+{
+  "name": "ROMwebsite2026",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "romwebsite2026/request-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "ca8e2b01-ef4c-4e30-b47f-8357bc79852c",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        192
+      ],
+      "webhookId": "rom-intake-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "secret-check",
+              "leftValue": "={{ $('Webhook').item.json.headers['x-rom-intake-key'] }}",
+              "rightValue": "={{ $env.ROM_INTAKE_SECRET }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "60386b71-53ac-4532-ab35-064169afdeed",
+      "name": "Validate Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\"ok\": false, \"error\": \"Unauthorized\", \"code\": 401} }}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "f43c59c5-452b-42ad-bc91-9a1bbc24279a",
+      "name": "Reject Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-firstname",
+              "leftValue": "={{ $json.body.customer.firstName }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "check-email",
+              "leftValue": "={{ $json.body.customer.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "check-address",
+              "leftValue": "={{ $json.body.listing.address }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8ed8112b-a486-41f9-a134-270d7790ad67",
+      "name": "Validate Required Fields",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\"ok\": false, \"error\": \"Missing required fields\", \"code\": 422} }}",
+        "options": {
+          "responseCode": 422
+        }
+      },
+      "id": "6d8a50d8-a80b-4391-9a04-e021a4c14430",
+      "name": "Reject Invalid Fields",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        224,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.customer.email }}",
+        "subject": "={{ \"Photo Request: \" + $json.body.listing.address }}",
+        "emailType": "text",
+        "message": "={{ \"Hello \" + $json.body.customer.firstName + \" \" + $json.body.customer.lastName + \",\\n\\nThank you for your photo request. Your submission has been recorded below. We will review the information and get back to you with potential dates and times at our next opportunity. Your place in line has been saved. Please make sure to \\\"reply all\\\" (if applicable), so that everybody will have access to any notes and discussions regarding this photo shoot. Thank you again!\\n\\nEstimate (Final Amount Subject to Change):\\n\" + $json.body.estimate.lineItemsText + \"\\nTotal: $\" + $json.body.estimate.estimatedTotal + \"\\n\\n---------\\n\\nAddress:\\n\" + ($json.body.listing.buildingName || \"N/A\") + \"\\n\" + $json.body.listing.address + \"\\n\" + $json.body.listing.city + \"\\nBedrooms: \" + ($json.body.listing.bedrooms || \"N/A\") + \"\\nBathrooms: \" + ($json.body.listing.bathrooms || \"N/A\") + \"\\nSq Ft: \" + ($json.body.listing.listingSize || \"N/A\") + \"\\nFinished Basement: \" + ($json.body.services.finishedBasement || \"N/A\") + \"\\nList Price: \" + ($json.body.listing.estimatedPriceBand || \"N/A\") + \"\\n\\n---------\\n\\nAgent:\\n\" + $json.body.customer.firstName + \" \" + $json.body.customer.lastName + \"\\n\" + $json.body.customer.email + \"\\n\" + ($json.body.customer.phone || \"N/A\") + \"\\n\" + ($json.body.listing.usage || \"N/A\") + \"\\n\" + ($json.body.customer.agency || \"N/A\") + \"\\n\\n----------\\n\\nDate Listing will be Ready: \" + ($json.body.timing.dateListingReady || \"N/A\") + \"\\nVacant: \" + ($json.body.timing.isVacant || \"N/A\") + \"\\nDate To go Live: \" + ($json.body.timing.dateToGoLive || \"N/A\") + \"\\nDesired Date: \" + ($json.body.timing.desiredDate || \"N/A\") + \"\\n\\n-----------\\n\\nNotes:\\n\" + ($json.body.services.notesForPhotographer || \"None\") + \"\\n\\n------------\\n\\nAccess To the Property:\\n\" + ($json.body.access.accessType || \"N/A\") + \"\\nCode: \" + ($json.body.access.accessCode || \"N/A\") + \"\\nOwner Info: \" + ($json.body.access.ownerContactInfo || \"N/A\") + \"\\n\\nThank you!\\n\\nRyan Owen\\n240-401-8385\\nwww.ryanowenphotography.com\\n\\n*** In order to give every project my full attention, I cannot respond to emails or texts while I am shooting. Thank you for your patience. ***\" }}",
+        "options": {
+          "ccList": "ryan@ryanowenphotography.com"
+        }
+      },
+      "id": "65f7d5c2-2401-466e-b820-55a945fa9329",
+      "name": "Send Client Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        0
+      ],
+      "webhookId": "8bc48425-c9ad-4f1c-9197-5858930ad085",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Aw4STdDise05gjzE",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17L80EjoMc8RQYZwob5I2XtXTY9J0yo73a6P5Fr0noUQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "2026 FORM_DATA",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SubmittedAt": "={{ $('Webhook').item.json.body.meta.submittedAt }}",
+            "ClientFirstName": "={{ $('Webhook').item.json.body.customer.firstName }}",
+            "ClientLastName": "={{ $('Webhook').item.json.body.customer.lastName }}",
+            "ClientEmail": "={{ $('Webhook').item.json.body.customer.email }}",
+            "ClientPhone": "={{ $('Webhook').item.json.body.customer.phone || \"\" }}",
+            "Company": "={{ $('Webhook').item.json.body.customer.agency || \"\" }}",
+            "Bedrooms": "={{ $('Webhook').item.json.body.listing.bedrooms || \"\" }}",
+            "List Price": "={{ $('Webhook').item.json.body.listing.estimatedPriceBand || \"\" }}",
+            "Sq Ft": "={{ $('Webhook').item.json.body.listing.listingSize || \"\" }}",
+            "Listing Address": "={{ $('Webhook').item.json.body.listing.address }}",
+            "City": "={{ $('Webhook').item.json.body.listing.city || \"\" }}",
+            "Sales/Rentals": "={{ $('Webhook').item.json.body.listing.usage || \"\" }}",
+            "Service": "={{ Array.isArray($('Webhook').item.json.body.services.selected) ? $('Webhook').item.json.body.services.selected.join(\", \") : String($('Webhook').item.json.body.services.selected || \"\") }}",
+            "Estimated Line Items": "={{ $('Webhook').item.json.body.estimate.lineItemsText }}",
+            "Estimated Total": "={{ $('Webhook').item.json.body.estimate.estimatedTotal }}",
+            "BillingEmail": "={{ $('Webhook').item.json.body.customer.email }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "42892409-205b-410e-aaf4-7443fa3be0aa",
+      "name": "Append to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        880,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4NFFohHeOIKuQM0a",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\"ok\": true, \"requestId\": $('Webhook').item.json.body.meta.requestId, \"clientEmailStatus\": \"SENT\", \"internalEmailStatus\": \"SENT\", \"sheetWriteStatus\": \"APPENDED\"} }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "cfc82868-758a-452c-8bda-667cb97cccfb",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Secret": {
+      "main": [
+        [
+          {
+            "node": "Validate Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Required Fields": {
+      "main": [
+        [
+          {
+            "node": "Send Client Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject Invalid Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Client Email": {
+      "main": [
+        [
+          {
+            "node": "Append to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ed845c1d-76bd-421a-b9fe-53714d6824d7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0a0408ada9decc18d7dc68e3e27778ce1df6c23b77d8a89a9e3ce6de120040e0"
+  },
+  "id": "gAkL7pzePvWMIX2G",
+  "tags": []
+}
