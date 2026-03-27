@@ -1486,17 +1486,37 @@ function pickRecipientByClientEmail_(items, idx) {
 }
 
 function pickRecipientWithBillingInfo_(items, idx) {
+ const company = String(items[0].row[idx[COLS.Company]] || "").trim();
+ const companyLower = company.toLowerCase();
+ 
+ // Priority 1: Check form's BillingEmail column (direct override)
  const directBilling = firstNonEmpty_(items.map(it => it.row[idx[COLS.BillingEmail]]));
- if (String(directBilling || "").trim()) return String(directBilling).trim();
+ if (String(directBilling || "").trim()) {
+   Logger.log(`Using BillingEmail from form row for ${company}: ${directBilling}`);
+   return String(directBilling).trim();
+ }
 
- const company = String(items[0].row[idx[COLS.Company]] || "").trim().toLowerCase();
+ // Priority 2: Check CO_BILLING_INFO tab for company's billing email
  const billingMap = getBillingMap_();
- const hit = billingMap.get(company);
- if (hit && String(hit.billingEmail || "").trim()) return String(hit.billingEmail).trim();
+ const hit = billingMap.get(companyLower);
+ if (hit && String(hit.billingEmail || "").trim()) {
+   Logger.log(`Using BillingEmail from CO_BILLING_INFO for ${company}: ${hit.billingEmail}`);
+   return String(hit.billingEmail).trim();
+ }
+ 
+ // If CO_BILLING_INFO lookup failed, log a warning
+ if (billingMap.size > 0) {
+   Logger.log(`WARNING: Company "${company}" not found in CO_BILLING_INFO. Available companies: ${Array.from(billingMap.keys()).join(', ')}`);
+ } else {
+   Logger.log(`WARNING: CO_BILLING_INFO sheet is empty or missing. Falling back to ClientEmail.`);
+ }
 
+ // Priority 3: Fall back to form's ClientEmail
  const client = firstNonEmpty_(items.map(it => it.row[idx[COLS.ClientEmail]]));
  const toEmail = String(client || "").trim();
- if (!toEmail) throw new Error("No recipient found (BillingEmail, CO_BILLING_INFO, and ClientEmail are blank).");
+ if (!toEmail) throw new Error(`No recipient found for company "${company}": BillingEmail, CO_BILLING_INFO, and ClientEmail are all blank.`);
+ 
+ Logger.log(`Falling back to ClientEmail for ${company}: ${toEmail}`);
  return toEmail;
 }
 
