@@ -1856,7 +1856,8 @@ function incrementInvoiceNumber_(inv) {
  const year = m[1];
  const num = parseInt(m[2], 10);
  if (!Number.isFinite(num)) throw new Error(`Bad invoice number numeric part: ${s}`);
- return `${year}-${String(num + 1)}`;
+ // Pad to 4 digits after dash (e.g., 9999-0003)
+ return `${year}-${String(num + 1).padStart(4, '0')}`;
 }
 
 function sendSecondAttemptOverdueByLastName() {
