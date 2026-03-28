@@ -186,6 +186,7 @@ const COLS = {
  PhotoLink: "PhotoLink",
  VideoLink: "VideoLink",
  ReelsLink: "ReelsLink",
+ TourLink: "TourLink",
  LockedLink: "LockedLink",
 
  ManualInvoice: "ManualInvoice",
@@ -353,7 +354,7 @@ function runPhotosOnly_(opts) {
  const idx = ctx.idx;
  validateColumns_(ctx.idx, [
  COLS.Company, COLS.ClientLastName, COLS.ClientFirstName, COLS.ClientEmail, COLS.BillingEmail,
- COLS.InvoiceNumber, COLS.InvoiceStatus, COLS.Delivered, COLS.PhotoLink, COLS.VideoLink, COLS.ReelsLink, COLS.ListingAddress
+ COLS.InvoiceNumber, COLS.InvoiceStatus, COLS.Delivered, COLS.PhotoLink, COLS.VideoLink, COLS.ReelsLink, COLS.TourLink, COLS.ListingAddress
  ]);
 
  const eligible = filterRows_(ctx, {
@@ -440,7 +441,7 @@ function runPhotosPlusInvoice_(opts) {
  const idx = ctx.idx;
  validateColumns_(ctx.idx, [
  COLS.Company, COLS.ClientLastName, COLS.ClientFirstName, COLS.ClientEmail, COLS.BillingEmail,
- COLS.InvoiceNumber, COLS.InvoiceStatus, COLS.Delivered, COLS.PhotoLink, COLS.VideoLink, COLS.ReelsLink,
+ COLS.InvoiceNumber, COLS.InvoiceStatus, COLS.Delivered, COLS.PhotoLink, COLS.VideoLink, COLS.ReelsLink, COLS.TourLink,
  COLS.EstTotal, COLS.Total, COLS.Deposit, COLS.InvoicedAt, COLS.InvoicePDFUrl,
  COLS.ListingAddress, COLS.Bedrooms, COLS.Service, COLS.City, COLS.EstLineItems
  ]);
@@ -832,7 +833,7 @@ function runThankYouDownloadLink_(opts) {
  const idx = ctx.idx;
  validateColumns_(ctx.idx, [
  COLS.Company, COLS.ClientLastName, COLS.ClientFirstName, COLS.ClientEmail, COLS.BillingEmail,
- COLS.Delivered, COLS.PhotoLink, COLS.VideoLink, COLS.ReelsLink, COLS.ListingAddress,
+ COLS.Delivered, COLS.PhotoLink, COLS.VideoLink, COLS.ReelsLink, COLS.TourLink, COLS.ListingAddress,
  COLS.InvoiceStatus, COLS.InvoicedAt
  ]);
 
@@ -1379,6 +1380,7 @@ function buildMediaLinksText_(items, idx) {
  const photo = String(it.row[idx[COLS.PhotoLink]] || "").trim();
  const video = String(it.row[idx[COLS.VideoLink]] || "").trim();
  const reels = String(it.row[idx[COLS.ReelsLink]] || "").trim();
+ const tour = String(it.row[idx[COLS.TourLink]] || "").trim();
 
  let s = "";
  s += `${addr} Photo Link:\n${photo || "(No photo link)"}\n\n`;
@@ -1389,6 +1391,10 @@ function buildMediaLinksText_(items, idx) {
 
  if (reels) {
  s += `${addr} Reels Link:\n${reels}\n\n`;
+ }
+
+ if (tour) {
+ s += `${addr} Tour Link:\n${tour}\n\n`;
  }
 
  return s;
@@ -1402,6 +1408,7 @@ function buildMediaLinksHtml_(items, idx) {
  const photo = String(it.row[idx[COLS.PhotoLink]] || "").trim();
  const video = String(it.row[idx[COLS.VideoLink]] || "").trim();
  const reels = String(it.row[idx[COLS.ReelsLink]] || "").trim();
+ const tour = String(it.row[idx[COLS.TourLink]] || "").trim();
 
  let s = "";
  s += `<b>${escapeHtml_(addr)} Photo Link:</b><br>${linkOrTextHtml_(photo)}<br><br>`;
@@ -1412,6 +1419,10 @@ function buildMediaLinksHtml_(items, idx) {
 
  if (reels) {
  s += `<b>${escapeHtml_(addr)} Reels Link:</b><br>${linkOrTextHtml_(reels)}<br><br>`;
+ }
+
+ if (tour) {
+ s += `<b>${escapeHtml_(addr)} Tour Link:</b><br>${linkOrTextHtml_(tour)}<br><br>`;
  }
 
  return s;

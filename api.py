@@ -527,11 +527,44 @@ def build_estimate(job_in: JobCreate) -> EstimateResponse:
     # Base subtotal BEFORE multipliers (for transparency)
     raw_subtotal = 0.0
 
+    # Detect service combinations for conditional pricing
+    services_list = job_in.services or []
+    has_video = "Video" in services_list
+    has_reels = "Instagram Reels (Vertical Video)" in services_list
+    has_zillow_360 = "Zillow 360 Tour" in services_list or "Zillow Tour" in services_list
+    has_matterport = "Matterport 360 (Must Have Matterport Account)" in services_list
+    has_floor_plan = "Zillow Floor Plan" in services_list
+    has_community = "Community Photos" in services_list
+    has_community_interiors = "Community Interiors" in services_list
+    has_drone = "Drone Photos" in services_list
+    has_basic = "Basic Photos" in services_list
+    
+    # Count how many services are selected (for "ONLY Drones" check)
+    non_basic_services_count = len([s for s in services_list if s != "Basic Photos"])
+    drone_only = has_drone and non_basic_services_count == 1 and not has_basic
+
     # Build line items (apply multipliers per service)
-    for s in (job_in.services or []):
+    for s in services_list:
         svc = services_cfg.get(s) or {}
         base = float(svc.get("base", 0))
         apply_mult = bool(svc.get("apply_multipliers", False))
+
+        # Apply conditional pricing rules
+        if s == "Drone Photos" and drone_only:
+            # If ONLY Drones selected: $99 (not $49)
+            base = 99.0
+        elif s == "Instagram Reels (Vertical Video)" and not has_video:
+            # If Reels WITHOUT Video: $199 (not $99)
+            base = 199.0
+        elif s == "Zillow Floor Plan" and not has_zillow_360 and not has_matterport:
+            # If Floor Plan WITHOUT Zillow 360 or Matterport: $99 (not $0)
+            base = 99.0
+        elif s == "Community Photos" and has_community_interiors:
+            # Community Photos + Community Interiors = $149 total
+            base = 49.0  # Will be combined with Community Interiors ($100) below
+        elif s == "Community Interiors":
+            # Community Interiors adds $100, making total $149 with Community Photos
+            base = 100.0
 
         raw_subtotal += base
 

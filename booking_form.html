@@ -651,9 +651,10 @@
             <label><input type="checkbox" value="Twilight Photos" /> Twilight Photos <button type="button" class="info-btn" data-target="info-twilight" aria-label="More info about Twilight Photos">ⓘ</button></label>
             <div class="info-popover" id="info-twilight">
               <img src="/site/images/twilight.jpg" alt="Twilight Photo example" />
-              <p>Sunset exteriors with enhanced lighting make your listing glow. Typically 5-10 "Hero" shots.</p>
+              <p>Sunset exteriors with enhanced lighting make your listing glow. Typically 5-10 "Hero" shots. <strong><a href="#" onclick="document.querySelector('input[value=\'Interior Twilights\']').checked=true; return false;" style="color:#0066cc;">Click here to add interior twilights</a></strong> (note: may require two shoots)</p>
             </div>
           </div>
+          <label><input type="checkbox" value="Interior Twilights" /> Interior Twilights</label>
           <div class="service-row">
             <label><input type="checkbox" value="Video" /> Video <button type="button" class="info-btn" data-target="info-video" aria-label="More info about Video">ⓘ</button></label>
             <div class="info-popover" id="info-video">
@@ -661,12 +662,18 @@
             </div>
           </div>
           <label><input type="checkbox" value="Instagram Reels (Vertical Video)" /> Instagram Reels (Vertical Video)</label>
-          <label><input type="checkbox" value="Community Photos" /> Community Photos</label>
+          <div class="service-row">
+            <label><input type="checkbox" value="Community Photos" /> Community Photos <button type="button" class="info-btn" data-target="info-community" aria-label="More info about Community Photos">ⓘ</button></label>
+            <div class="info-popover" id="info-community">
+              <p>Document the amenities that make a building or community worth buying into. <strong><a href="#" onclick="document.querySelector('input[value=\'Community Interiors\']').checked=true; return false;" style="color:#0066cc;">Click here if there are indoor amenities</a></strong> (Permission must be granted by management prior to arrival and FOB or code provided)</p>
+            </div>
+          </div>
+          <label><input type="checkbox" value="Community Interiors" /> Community Interiors</label>
           <label><input type="checkbox" value="Zillow 360 Tour" /> Zillow 360 Tour</label>
           <div class="service-row">
             <label><input type="checkbox" value="Zillow Floor Plan" /> Zillow Floor Plan <button type="button" class="info-btn" data-target="info-floorplan" aria-label="More info about Zillow Floor Plan">ⓘ</button></label>
             <div class="info-popover" id="info-floorplan">
-              <img src="https://githubrequestform.onrender.com/static/floor_plan.jpg" alt="Floor plan example" />
+              <img src="/static/floor_plan.jpg" alt="Floor plan example" />
               <p>A clean, accurate floor plan drawn from measurements taken on-site. Zillow listings with floor plans consistently outperform those without — buyers want to understand the layout before they visit.</p>
             </div>
           </div>
@@ -1351,7 +1358,13 @@
         // Services
         const serviceCheckboxes = form.querySelectorAll(".services-group input[type='checkbox']");
         const services = [];
-        serviceCheckboxes.forEach(cb => { if (cb.checked) services.push(cb.value); });
+        serviceCheckboxes.forEach(cb => { 
+          if (cb.checked) {
+            // Remap "Zillow 360 Tour" to "Zillow Tour" for sheet export
+            const value = cb.value === "Zillow 360 Tour" ? "Zillow Tour" : cb.value;
+            services.push(value);
+          }
+        });
         if (!services.length) {
           messageEl.textContent = "Please select at least one service.";
           messageEl.classList.add("error");
