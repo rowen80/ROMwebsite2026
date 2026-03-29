@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "3456", "--directory", "site"],
       "port": 3456
+    },
+    {
+      "name": "rom-root",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "3457", "--directory", "."],
+      "port": 3457
     }
   ]
 }

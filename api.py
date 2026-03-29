@@ -77,7 +77,7 @@ app.add_middleware(
 load_dotenv()
 N8N_INTAKE_WEBHOOK_URL = os.getenv("N8N_INTAKE_WEBHOOK_URL")
 N8N_INTAKE_SECRET = os.getenv("N8N_INTAKE_SECRET")
-RESET_ZAPIER_WEBHOOK_URL = os.getenv("RESET_ZAPIER_WEBHOOK_URL")
+N8N_RESET_WEBHOOK_URL = os.getenv("N8N_RESET_WEBHOOK_URL")
 
 if not N8N_INTAKE_WEBHOOK_URL:
     print("WARNING: N8N_INTAKE_WEBHOOK_URL not set in .env. /jobs n8n handoff will fail.")
@@ -453,9 +453,9 @@ def send_booking_to_n8n(payload: dict):
         return {}
 
 
-def send_password_reset_email_via_zapier(email: str, temp_password: str):
-    if not RESET_ZAPIER_WEBHOOK_URL:
-        print("RESET_ZAPIER_WEBHOOK_URL missing")
+def send_password_reset_email(email: str, temp_password: str):
+    if not N8N_RESET_WEBHOOK_URL:
+        print("N8N_RESET_WEBHOOK_URL missing — password reset email not sent.")
         return
 
     payload = {
@@ -463,14 +463,14 @@ def send_password_reset_email_via_zapier(email: str, temp_password: str):
         "temp_password": temp_password,
     }
 
-    print("Sending reset webhook:", payload)
+    print("Sending password reset to n8n:", payload)
 
     try:
-        resp = requests.post(RESET_ZAPIER_WEBHOOK_URL, json=payload, timeout=10)
+        resp = requests.post(N8N_RESET_WEBHOOK_URL, json=payload, timeout=10)
         if resp.status_code >= 400:
-            print(f"Password reset Zapier webhook returned {resp.status_code}: {resp.text[:200]}")
+            print(f"Password reset n8n webhook returned {resp.status_code}: {resp.text[:200]}")
     except Exception as e:
-        print(f"Error calling password reset Zapier webhook: {e}")
+        print(f"Error calling password reset n8n webhook: {e}")
 
 
 
@@ -996,7 +996,7 @@ def forgot_password(req: ForgotPasswordRequest):
             customer.updated_at = datetime.utcnow()
             db.commit()
 
-            send_password_reset_email_via_zapier(customer.email, temp_password)
+            send_password_reset_email(customer.email, temp_password)
 
         return {"message": "If that email exists, a reset email will be sent shortly."}
     finally:
