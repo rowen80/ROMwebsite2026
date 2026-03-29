@@ -345,12 +345,10 @@ def build_n8n_booking_payload(job_in, customer, job, estimate) -> dict:
         [f"{li.label}: ${li.line_total:.2f}" for li in estimate.line_items]
     )
     
-    # Format bedrooms/bathrooms with units
-    bedrooms_formatted = f"{job_in.bedrooms} bedrooms" if job_in.bedrooms else ""
-    bathrooms_formatted = f"{job_in.bathrooms} bathrooms" if job_in.bathrooms else ""
-    
-    # Format listing size with units
-    listing_size_formatted = f"{job_in.listing_size} sqft" if job_in.listing_size else ""
+    # Use dropdown values directly — they already include the unit label
+    bedrooms_formatted = job_in.bedrooms or ""
+    bathrooms_formatted = job_in.bathrooms or ""
+    listing_size_formatted = job_in.listing_size or ""
     
     # Format usage (Sales vs For Sale)
     usage_formatted = "Sales" if job_in.usage == "For Sale" else ("Rentals" if job_in.usage == "For Rent" else job_in.usage)
@@ -533,7 +531,7 @@ def build_estimate(job_in: JobCreate) -> EstimateResponse:
     services_list = job_in.services or []
     has_video = "Video" in services_list
     has_reels = "Instagram Reels (Vertical Video)" in services_list
-    has_zillow_360 = "Zillow 360 Tour" in services_list or "Zillow Tour" in services_list
+    has_zillow_360 = "Zillow Virtual Tour" in services_list
     has_matterport = "Matterport 360 (Must Have Matterport Account)" in services_list
     has_floor_plan = "Zillow Floor Plan" in services_list
     has_community = "Community Photos" in services_list

@@ -685,7 +685,7 @@
             </div>
           </div>
           <label><input type="checkbox" value="Community Interiors" /> Community Interiors</label>
-          <label><input type="checkbox" value="Zillow 360 Tour" /> Zillow 360 Tour</label>
+          <label><input type="checkbox" value="Zillow Virtual Tour" /> Zillow Virtual Tour</label>
           <div class="service-row">
             <label><input type="checkbox" value="Zillow Floor Plan" /> Zillow Floor Plan <button type="button" class="info-btn" data-target="info-floorplan" aria-label="More info about Zillow Floor Plan">ⓘ</button></label>
             <div class="info-popover" id="info-floorplan">
@@ -1376,9 +1376,7 @@
         const services = [];
         serviceCheckboxes.forEach(cb => { 
           if (cb.checked) {
-            // Remap "Zillow 360 Tour" to "Zillow Tour" for sheet export
-            const value = cb.value === "Zillow 360 Tour" ? "Zillow Tour" : cb.value;
-            services.push(value);
+            services.push(cb.value);
           }
         });
         if (!services.length) {
