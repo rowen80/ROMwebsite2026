@@ -183,6 +183,8 @@ class JobSummary(BaseModel):
     service_raw: Optional[str] = None
     invoice_number: Optional[str] = None
     source: Optional[str] = None
+    agent_first_name: Optional[str] = None
+    agent_last_name: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
