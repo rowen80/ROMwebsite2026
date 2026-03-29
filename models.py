@@ -100,6 +100,10 @@ class Job(Base):
     sale_type = Column(String, nullable=True)
     source = Column(String, nullable=True)
 
+    # Agent name as submitted on the form (independent of the customer/account record)
+    agent_first_name = Column(String, nullable=True)
+    agent_last_name = Column(String, nullable=True)
+
     # NEW: full raw form payload from the app as JSON
     form_data_json = Column(String, nullable=True)
 
@@ -140,6 +144,10 @@ def init_db():
             # jobs (soft cancel)
             'ALTER TABLE jobs ADD COLUMN IF NOT EXISTS status VARCHAR',
             'ALTER TABLE jobs ADD COLUMN IF NOT EXISTS cancelled_at TIMESTAMP',
+
+            # jobs (agent name — independent of customer account)
+            'ALTER TABLE jobs ADD COLUMN IF NOT EXISTS agent_first_name VARCHAR',
+            'ALTER TABLE jobs ADD COLUMN IF NOT EXISTS agent_last_name VARCHAR',
         ]
 
         with engine.begin() as conn:
