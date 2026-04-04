@@ -424,7 +424,7 @@ def send_booking_to_n8n(payload: dict):
 
     headers = {"Content-Type": "application/json"}
     if N8N_INTAKE_SECRET:
-        headers["X-N8N-Secret"] = N8N_INTAKE_SECRET
+        headers["x-rom-intake-key"] = N8N_INTAKE_SECRET
         print(f"[DEBUG] N8N_INTAKE_SECRET is set: {N8N_INTAKE_SECRET[:8]}...")
     else:
         print(f"[DEBUG] WARNING: N8N_INTAKE_SECRET is NOT set!")
