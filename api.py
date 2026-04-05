@@ -59,6 +59,8 @@ app.mount("/site", StaticFiles(directory="site", html=True), name="site")
 origins = [
     "http://127.0.0.1:8001",
     "http://localhost:8001",
+    "https://www.ryanowenphotography.com",
+    "https://githubrequestform-work.onrender.com",
 ]
 
 app.add_middleware(
