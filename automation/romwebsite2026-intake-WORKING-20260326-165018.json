@@ -155,8 +155,8 @@
       "webhookId": "8bc48425-c9ad-4f1c-9197-5858930ad085",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Aw4STdDise05gjzE",
-          "name": "Gmail account 2"
+          "id": "",
+          "name": "Gmail account"
         }
       }
     },
