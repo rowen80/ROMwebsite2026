@@ -139,9 +139,10 @@
         "fromEmail": "ryan.owen@ryanowenphotography.com",
         "toEmail": "={{ $json.body.customer.email }}",
         "subject": "={{ \"Photo Request: \" + $json.body.listing.address }}",
-        "message": "={{ \"Hello \" + $json.body.customer.firstName + \" \" + $json.body.customer.lastName + \",\\n\\nThank you for your photo request. Your submission has been recorded below. We will review the information and get back to you with potential dates and times at our next opportunity. Your place in line has been saved. Please make sure to \\\"reply all\\\" (if applicable), so that everybody will have access to any notes and discussions regarding this photo shoot. Thank you again!\\n\\nEstimate (Final Amount Subject to Change):\\n\" + $json.body.estimate.lineItemsText + \"\\nTotal: $\" + $json.body.estimate.estimatedTotal + \"\\n\\n---------\\n\\nAddress:\\n\" + ($json.body.listing.buildingName || \"N/A\") + \"\\n\" + $json.body.listing.address + \"\\n\" + $json.body.listing.city + \"\\nBedrooms: \" + ($json.body.listing.bedrooms || \"N/A\") + \"\\nBathrooms: \" + ($json.body.listing.bathrooms || \"N/A\") + \"\\nSq Ft: \" + ($json.body.listing.listingSize || \"N/A\") + \"\\nFinished Basement: \" + ($json.body.services.finishedBasement || \"N/A\") + \"\\nList Price: \" + ($json.body.listing.estimatedPriceBand || \"N/A\") + \"\\n\\n---------\\n\\nAgent:\\n\" + $json.body.customer.firstName + \" \" + $json.body.customer.lastName + \"\\n\" + $json.body.customer.email + \"\\n\" + ($json.body.customer.phone || \"N/A\") + \"\\n\" + ($json.body.listing.usage || \"N/A\") + \"\\n\" + ($json.body.customer.agency || \"N/A\") + \"\\n\\n----------\\n\\nDate Listing will be Ready: \" + ($json.body.timing.dateListingReady || \"N/A\") + \"\\nVacant: \" + ($json.body.timing.isVacant || \"N/A\") + \"\\nDate To go Live: \" + ($json.body.timing.dateToGoLive || \"N/A\") + \"\\nDesired Date: \" + ($json.body.timing.desiredDate || \"N/A\") + \"\\n\\n-----------\\n\\nNotes:\\n\" + ($json.body.services.notesForPhotographer || \"None\") + \"\\n\\n------------\\n\\nAccess To the Property:\\n\" + ($json.body.access.accessType || \"N/A\") + \"\\nCode: \" + ($json.body.access.accessCode || \"N/A\") + \"\\nOwner Info: \" + ($json.body.access.ownerContactInfo || \"N/A\") + \"\\n\\nThank you!\\n\\nRyan Owen\\n240-401-8385\\nwww.ryanowenphotography.com\\n\\n*** In order to give every project my full attention, I cannot respond to emails or texts while I am shooting. Thank you for your patience. ***\" }}",
+        "emailFormat": "text",
+        "text": "={{ \"Hello \" + $json.body.customer.firstName + \" \" + $json.body.customer.lastName + \",\\n\\nThank you for your photo request. Your submission has been recorded below. We will review the information and get back to you with potential dates and times at our next opportunity. Your place in line has been saved. Please make sure to \\\"reply all\\\" (if applicable), so that everybody will have access to any notes and discussions regarding this photo shoot. Thank you again!\\n\\nEstimate (Final Amount Subject to Change):\\n\" + $json.body.estimate.lineItemsText + \"\\nTotal: $\" + $json.body.estimate.estimatedTotal + \"\\n\\n---------\\n\\nAddress:\\n\" + ($json.body.listing.buildingName || \"N/A\") + \"\\n\" + $json.body.listing.address + \"\\n\" + $json.body.listing.city + \"\\nBedrooms: \" + ($json.body.listing.bedrooms || \"N/A\") + \"\\nBathrooms: \" + ($json.body.listing.bathrooms || \"N/A\") + \"\\nSq Ft: \" + ($json.body.listing.listingSize || \"N/A\") + \"\\nFinished Basement: \" + ($json.body.services.finishedBasement || \"N/A\") + \"\\nList Price: \" + ($json.body.listing.estimatedPriceBand || \"N/A\") + \"\\n\\n---------\\n\\nAgent:\\n\" + $json.body.customer.firstName + \" \" + $json.body.customer.lastName + \"\\n\" + $json.body.customer.email + \"\\n\" + ($json.body.customer.phone || \"N/A\") + \"\\n\" + ($json.body.listing.usage || \"N/A\") + \"\\n\" + ($json.body.customer.agency || \"N/A\") + \"\\n\\n----------\\n\\nDate Listing will be Ready: \" + ($json.body.timing.dateListingReady || \"N/A\") + \"\\nVacant: \" + ($json.body.timing.isVacant || \"N/A\") + \"\\nDate To go Live: \" + ($json.body.timing.dateToGoLive || \"N/A\") + \"\\nDesired Date: \" + ($json.body.timing.desiredDate || \"N/A\") + \"\\n\\n-----------\\n\\nNotes:\\n\" + ($json.body.services.notesForPhotographer || \"None\") + \"\\n\\n------------\\n\\nAccess To the Property:\\n\" + ($json.body.access.accessType || \"N/A\") + \"\\nCode: \" + ($json.body.access.accessCode || \"N/A\") + \"\\nOwner Info: \" + ($json.body.access.ownerContactInfo || \"N/A\") + \"\\n\\nThank you!\\n\\nRyan Owen\\n240-401-8385\\nwww.ryanowenphotography.com\\n\\n*** In order to give every project my full attention, I cannot respond to emails or texts while I am shooting. Thank you for your patience. ***\" }}",
         "options": {
-          "ccList": "={{ (() => { const agency = $json.body.customer.agency || \"\"; let r = [\"ryan@ryanowenphotography.com\", \"ryan.owen@ryanowenphotography.com\"]; if (agency === \"PenFed Gallo Realty\") { r.push(\"rehoboth@penfedrealty.com\"); } if (agency === \"LeeAnn Group\") { r.push(\"rehoboth@penfedrealty.com\"); r.push(\"leeann@leeanngroup.com\"); } return r.join(\", \"); })() }}",
+          "ccList": "={{ [\"ryan@ryanowenphotography.com\", \"ryan.owen@ryanowenphotography.com\"].concat($json.body.customer.agency === \"PenFed Gallo Realty\" ? [\"rehoboth@penfedrealty.com\"] : $json.body.customer.agency === \"LeeAnn Group\" ? [\"rehoboth@penfedrealty.com\", \"leeann@leeanngroup.com\"] : []).join(\", \") }}",
           "appendAttribution": false
         }
       },
@@ -162,6 +163,19 @@
     },
     {
       "parameters": {
+        "jsCode": "const wb = $('Webhook').item.json.body;\nreturn [{\n  json: {\n    \"SubmittedAt\": wb.meta.submittedAt,\n    \"ClientFirstName\": wb.customer.firstName,\n    \"ClientLastName\": wb.customer.lastName,\n    \"ClientEmail\": wb.customer.email,\n    \"ClientPhone\": wb.customer.phone || \"\",\n    \"Company\": wb.customer.agency || \"\",\n    \"Bedrooms\": wb.listing.bedrooms || \"\",\n    \"List Price\": wb.listing.estimatedPriceBand || \"\",\n    \"Sq Ft\": wb.listing.listingSize || \"\",\n    \"Listing Address\": wb.listing.address,\n    \"City\": wb.listing.city || \"\",\n    \"Sales/Rentals\": wb.listing.usage || \"\",\n    \"Service\": Array.isArray(wb.services.selected) ? wb.services.selected.join(\", \") : String(wb.services.selected || \"\"),\n    \"Estimated Line Items\": wb.estimate.lineItemsText,\n    \"Estimated Total\": wb.estimate.estimatedTotal\n  }\n}];"
+      },
+      "id": "b7e3f1a2-c4d5-4e6f-8a9b-0c1d2e3f4a5b",
+      "name": "Build Sheet Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
         "operation": "append",
         "documentId": {
           "__rl": true,
@@ -174,24 +188,10 @@
           "mode": "name"
         },
         "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "SubmittedAt": "={{ $('Webhook').item.json.body.meta.submittedAt }}",
-            "ClientFirstName": "={{ $('Webhook').item.json.body.customer.firstName }}",
-            "ClientLastName": "={{ $('Webhook').item.json.body.customer.lastName }}",
-            "ClientEmail": "={{ $('Webhook').item.json.body.customer.email }}",
-            "ClientPhone": "={{ $('Webhook').item.json.body.customer.phone || \"\" }}",
-            "Company": "={{ $('Webhook').item.json.body.customer.agency || \"\" }}",
-            "Bedrooms": "={{ $('Webhook').item.json.body.listing.bedrooms || \"\" }}",
-            "List Price": "={{ $('Webhook').item.json.body.listing.estimatedPriceBand || \"\" }}",
-            "Sq Ft": "={{ $('Webhook').item.json.body.listing.listingSize || \"\" }}",
-            "Listing Address": "={{ $('Webhook').item.json.body.listing.address }}",
-            "City": "={{ $('Webhook').item.json.body.listing.city || \"\" }}",
-            "Sales/Rentals": "={{ $('Webhook').item.json.body.listing.usage || \"\" }}",
-            "Service": "={{ Array.isArray($('Webhook').item.json.body.services.selected) ? $('Webhook').item.json.body.services.selected.join(\", \") : String($('Webhook').item.json.body.services.selected || \"\") }}",
-            "Estimated Line Items": "={{ $('Webhook').item.json.body.estimate.lineItemsText }}",
-            "Estimated Total": "={{ $('Webhook').item.json.body.estimate.estimatedTotal }}"
-          }
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
         },
         "options": {}
       },
@@ -200,7 +200,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        880,
+        896,
         0
       ],
       "credentials": {
@@ -223,7 +223,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        1104,
+        1120,
         0
       ]
     }
@@ -278,6 +278,17 @@
       ]
     },
     "Send Client Email": {
+      "main": [
+        [
+          {
+            "node": "Build Sheet Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Sheet Row": {
       "main": [
         [
           {
