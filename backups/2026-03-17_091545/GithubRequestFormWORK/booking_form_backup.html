@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ryan Owen Photography – Photography Request Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* ========= BASE LAYOUT ========= */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 700px;
+      margin: 24px auto;
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: none;
+    }
+    .hero-image {
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 1.4rem;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+    h3 {
+      margin-top: 0;
+      margin-bottom: 6px;
+    }
+    p.sub {
+      margin-top: 0;
+      color: #555;
+      font-size: 0.9rem;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 4px;
+      box-sizing: border-box;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 0.95rem;
+    }
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+    .helper {
+      font-size: 0.8rem;
+      color: #777;
+      margin-top: 2px;
+      text-align: left;
+    }
+    .options-group,
+    .services-group,
+    .views-group,
+    .radio-group {
+      margin-top: 6px;
+      display: block;
+      text-align: left;
+    }
+    .options-group label,
+    .services-group label,
+    .views-group label,
+    .radio-group label {
+      display: block;
+      font-weight: 400;
+      margin-top: 4px;
+    }
+    .options-group input[type="radio"],
+    .radio-group input[type="radio"],
+    .services-group input[type="checkbox"],
+    .views-group input[type="checkbox"] {
+      margin-right: 6px;
+    }
+    button {
+      padding: 10px 16px;
+      background: #111;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .message {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    .message.success {
+      color: #0a7b3e;
+    }
+    .message.error {
+      color: #c0392b;
+    }
+    .tos-text {
+      font-size: 0.8rem;
+      color: #555;
+      text-align: left;
+      margin-top: 8px;
+    }
+    .small-note {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 4px;
+      text-align: left;
+    }
+    #jobs-list li {
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+    .section-spacer {
+      margin-top: 2px;
+      padding-top: 2px;
+      border-top: 0px solid #e0e0e0;
+    }
+
+    /* ========= ENTRY OVERLAY ========= */
+    #entry-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1200;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 80px;
+    }
+    #entry-card {
+      background: #ffffff;
+      max-width: 420px;
+      width: 90%;
+      padding: 20px 22px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    /* ========= MODAL COMMON ========= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1100;
+      display: none;
+    }
+    .modal-card {
+      background: white;
+      max-width: 480px;
+      width: 90%;
+      margin: 80px auto;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      position: relative;
+       /* NEW: make the card itself scrollable if it's tall */
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    /* ========= PROFILE BAR ========= */
+    #profile-bar {
+      margin-bottom: 8px;
+      text-align: left;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+
+    <!-- ========= ENTRY GATE ========= -->
+    <div id="entry-overlay">
+      <div id="entry-card">
+        <h2 style="margin-top:0; margin-bottom:8px;">Welcome to Ryan Owen Photography</h2>
+        <p class="small-note" style="margin-top:0; margin-bottom:10px;">
+          Choose how you'd like to continue:
+        </p>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+          <button type="button" id="entry-login-btn">Log In</button>
+          <button type="button" id="entry-create-btn">Create Account</button>
+          <button type="button" id="entry-guest-btn">Continue as Guest</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= HERO IMAGE ========= -->
+    <img id="hero-image" src="https://githubrequestform.onrender.com/static/image.jpg" alt="Ryan Owen Photography" class="hero-image" />
+
+    <!-- ========= FORM VIEW (MAIN CONTENT) ========= -->
+    <div id="form-container">
+      <h1>Photography Request Form</h1>
+      <p class="sub">
+        To request a photo shoot for your listing please provide the information below.
+        Once we have had a chance to review the request we will respond with potential times
+        for your approval. Thank you and we look forward to working with you!
+      </p>
+
+      <!-- ========= TOP PROFILE BAR (BUTTON ROW) ========= -->
+      <div id="profile-bar">
+        <button type="button" id="top-login-btn">Log In</button>
+        <button type="button" id="top-logout-btn" style="display:none;">Log Out</button>
+        <button type="button" id="top-create-btn">Create Account</button>
+        <button type="button" id="top-view-profile-btn" style="display:none;">View Profile</button>
+      </div>
+
+      <!-- CONTINUE AS GUEST TEXT -->
+      <label>Or simply continue as guest and fill out the form below:</label>
+
+
+      <!-- ========= BOOKING FORM ========= -->
+      <form id="booking-form">
+        <!-- Name -->
+        <label>Name *</label>
+        <input type="text" id="first_name" placeholder="First Name" required />
+        <input type="text" id="last_name" placeholder="Last Name" style="margin-top:6px;" required />
+
+        <!-- Email / Phone -->
+        <label for="email">Email *</label>
+        <input type="email" id="email" required />
+
+        <label for="phone">Agent Phone Number *</label>
+        <input type="tel" id="phone" required />
+
+        <!-- First time -->
+        <label>Is This Your First Time Using Ryan Owen Photography?</label>
+        <div class="options-group" id="is_first_time_group">
+          <label><input type="radio" name="is_first_time" value="yes" /> Yes</label>
+          <label><input type="radio" name="is_first_time" value="no" /> No</label>
+        </div>
+
+        <!-- Agency -->
+        <label for="agency">Agency - Please only select one *</label>
+        <select id="agency" required>
+          <option value="">Select one</option>
+          <option>AirBNB</option>
+          <option>PenFed Gallo Realty</option>
+          <option>Berkshire Hathaway</option>
+          <option>Coldwell Banker</option>
+          <option>Compass Resort Realty</option>
+          <option>Central Reservations</option>
+          <option>Debbie Read Team</option>
+          <option>Keller Williams</option>
+          <option>LeeAnn Group</option>
+          <option>Northrop</option>
+          <option>PenFed</option>
+          <option>Shore4You</option>
+          <option>Sotheby's</option>
+          <option>Vacasa</option>
+          <option>VRBO</option>
+          <option>Other</option>
+        </select>
+
+        <!-- Usage -->
+        <label for="usage">Sales / Rentals *</label>
+        <select id="usage" required>
+          <option value="">Select one</option>
+          <option>Sales</option>
+          <option>Rentals</option>
+        </select>
+
+        <!-- Address -->
+        <label for="address">Listing Address *</label>
+        <input type="text" id="address" required />
+
+        <label for="city">City *</label>
+        <input type="text" id="city" required />
+
+        <label for="building_name">Building Name / Community Name *</label>
+        <input type="text" id="building_name" required />
+
+        <!-- Bedrooms / Bathrooms / Size -->
+        <label for="bedrooms"># Bedrooms *</label>
+        <select id="bedrooms" required>
+          <option value="">Select one</option>
+          <option>1 Bedroom</option>
+          <option>2 Bedrooms</option>
+          <option>3 Bedrooms</option>
+          <option>4 Bedrooms</option>
+          <option>5 Bedrooms</option>
+          <option>More than 5 Bedrooms (please list in Notes below)</option>
+          <option>Lot (Please provide a site plan in the email thread)</option>
+        </select>
+
+        <div class="section-spacer">
+          <label for="bathrooms"># Bathrooms *</label>
+          <select id="bathrooms" required>
+            <option value="">Select one</option>
+            <option>1 Bathroom</option>
+            <option>2 Bathrooms</option>
+            <option>3 Bathrooms</option>
+            <option>4 Bathrooms</option>
+            <option>More Than 4 Bathrooms</option>
+            <option>N/A</option>
+          </select>
+        </div>
+
+        <div class="section-spacer">
+          <label for="listing_size">Listing Size SqFt *</label>
+          <select id="listing_size" required>
+            <option value="">Select one</option>
+            <option>1000 sqft</option>
+            <option>2000 sqft</option>
+            <option>3000 sqft</option>
+            <option>4000 sqft</option>
+            <option>5000 sqft</option>
+            <option>Larger than 5000 sqft</option>
+          </select>
+        </div>
+
+        <!-- Views -->
+        <div class="section-spacer">
+          <label>Views</label>
+          <div class="views-group">
+            <label><input type="checkbox" value="Oceanfront Views" /> Oceanfront Views</label>
+            <label><input type="checkbox" value="Bayfront Views" /> Bayfront Views</label>
+            <label><input type="checkbox" value="Other Water Views" /> Other Water Views</label>
+            <label><input type="checkbox" value="Other Views, Add Note Below" /> Other Views, Add Note Below</label>
+          </div>
+        </div>
+
+        <!-- Finished basement -->
+        <div class="section-spacer">
+          <label for="finished_basement">Finished Basement *</label>
+          <select id="finished_basement" required>
+            <option value="">Select one</option>
+            <option>Yes, There is a Finished Basement</option>
+            <option>No, There is not a Basement</option>
+          </select>
+        </div>
+
+        <!-- Estimated price -->
+        <div class="section-spacer">
+          <label for="estimated_price_band">Estimated Listing Price: *</label>
+          <select id="estimated_price_band" required>
+            <option value="">Select one</option>
+            <option>$0- 500k</option>
+            <option>$500- 750k</option>
+            <option>$750k- 1M</option>
+            <option>$1M- 1.5M</option>
+            <option>$1.5M - 2M</option>
+            <option>$2M+</option>
+          </select>
+        </div>
+
+        <div class="helper">This information will remain CONFIDENTIAL.</div>
+
+        <!-- Dates -->
+        <label for="date_listing_ready">Date Listing Will Be Ready *</label>
+        <input type="date" id="date_listing_ready" required />
+        <div class="helper">
+          If you have a specific or preferred date and time please add a note below.
+        </div>
+
+        <label for="date_to_go_live">Date To Go Live</label>
+        <input type="date" id="date_to_go_live" />
+
+        <!-- Vacant -->
+        <label for="is_vacant">Is The Listing Vacant? *</label>
+        <select id="is_vacant" required>
+          <option value="">Select one</option>
+          <option>Yes it is Vacant</option>
+          <option>It is Occupied</option>
+        </select>
+
+        <!-- During the shoot -->
+        <div class="section-spacer">
+          <label>During The Shoot *</label>
+          <div class="helper">
+            We require all listings to be vacant during the shoot. Please be prepared to remove all cars, pets and humans from the property.
+          </div>
+          <div class="radio-group">
+            <label>
+              <input type="checkbox" id="during_shoot_agreement" />
+              Agent agrees that the listing will be vacant for the scheduled time.
+            </label>
+          </div>
+        </div>
+
+        <!-- Access -->
+        <label>Access to Property *</label>
+        <div class="radio-group" id="access_type_group">
+          <label><input type="radio" name="access_type" value="Keys" /> Keys. Please include pick-up location in the notes.</label>
+          <label><input type="radio" name="access_type" value="Code will be Provided" /> Code will be Provided</label>
+          <label><input type="radio" name="access_type" value="Agent will Meet" /> Agent will Meet</label>
+          <label><input type="radio" name="access_type" value="Owner will Meet" /> Owner will Meet</label>
+        </div>
+
+        <label for="access_code">If You Already Know the Access Code You May Enter it Here</label>
+        <input type="text" id="access_code" />
+
+        <label for="owner_contact_info">
+          Owner Contact Info (Required: Emergency use only)
+        </label>
+        <textarea id="owner_contact_info"></textarea>
+
+        <!-- Services -->
+        <label>Services Requested *</label>
+        <div class="helper">
+          Our rates are based on several factors. An estimate will be provided once the form is completed. 
+        </div>
+        <div class="services-group">
+          <label><input type="checkbox" value="Basic Photos" /> Basic Photos</label>
+          <label><input type="checkbox" value="Drone Photos" /> Drone Photos</label>
+          <label><input type="checkbox" value="Twilight Photos" /> Twilight Photos</label>
+          <label><input type="checkbox" value="Video" /> Video</label>
+          <label><input type="checkbox" value="Instagram Reels (Vertical Video)" /> Instagram Reels (Vertical Video)</label>
+          <label><input type="checkbox" value="Community Photos" /> Community Photos</label>
+          <label><input type="checkbox" value="Zillow 360 Tour" /> Zillow 360 Tour</label>
+          <label><input type="checkbox" value="Zillow Floor Plan" /> Zillow Floor Plan</label>
+          <label><input type="checkbox" value="Matterport 360 (Must Have Matterport Account)" /> Matterport 360 (Must Have Matterport Account)</label>
+          <label><input type="checkbox" value="Catalogue Style Photos (Quality not Quantity)" /> Catalogue Style Photos (Quality not Quantity)</label>
+        </div>
+
+        <!-- Notes -->
+        <label for="notes">Notes / Features / Special Requests</label>
+        <textarea id="notes" placeholder=""></textarea>
+
+        <!-- Terms of Service -->
+        <label>Terms of Service *</label>
+        <div class="tos-text">
+          By submitting this form you agree to the
+          <a href="https://www.ryanowenphotography.com/terms" target="_blank" rel="noopener noreferrer">
+            Terms of Service
+          </a>.
+        </div>
+        <div class="radio-group">
+          <label>
+            <input type="checkbox" id="tos_accept" />
+            Accept
+          </label>
+        </div>
+
+        <button type="submit" style="margin-top:18px;">Submit</button>
+
+        <div id="message" class="message"></div>
+
+        <p class="small-note">
+          Thank you for your request. If you do not receive a confirmation email in the next few minutes,
+          something went wrong. Confirm that all fields have been completed. 
+          Email ryan@ryanowenphotography.com if problems persist. Thanks!
+        </p>
+      </form>
+    </div>
+
+    <!-- ========= THANK YOU VIEW ========= -->
+    <div id="thankyou-container" style="display:none; text-align:left;">
+      <h1>Thank you for your request</h1>
+      <p class="sub">
+        We’ve received your photography request. You should receive a confirmation email shortly.
+        Once we review the details, we’ll reply with potential dates and times for your approval.
+      </p>
+
+      <!-- ========= ESTIMATE BOX (NEW) ========= -->
+      <div id="estimate-box" style="display:none; margin-top:14px; padding:12px; border:1px solid #e5e5e5; border-radius:8px; background:#fafafa;">
+        <h3 style="margin:0 0 8px 0;">Estimated price</h3>
+        <div id="estimate-items" class="small-note"></div>
+        <div id="estimate-total" style="margin-top:10px; font-weight:700;"></div>
+        <div class="small-note" style="margin-top:6px; color:#666;">
+          Estimate only. Final pricing may change after review.
+        </div>
+      </div>
+
+
+      <p class="small-note">
+        <strong>Weather Policy:</strong> If you prefer sunny skies please watch the weather and reschedule at least 24 hours prior to the
+        scheduled time. We will not cancel a shoot due to cloudy weather.  To protect our equipment we will not shoot while it is actively 
+        raining. In the event of a cancellation we will work with you to provide our next available time slot.  
+      </p>
+
+      <p class="small-note">
+        If you do not receive a confirmation email in the next few minutes, something went wrong.
+        Please make sure you entered the correct email address, or reach out to Ryan directly.
+      </p>
+
+      <button id="new-request-btn">Submit another request</button>
+    </div>
+
+    <!-- ========= LOGIN MODAL ========= -->
+    <div id="login-modal-overlay" class="modal-overlay">
+      <div class="modal-card" id="login-modal">
+        <button type="button" id="close-login-modal" class="modal-close">&times;</button>
+        <h2 style="margin-top:0; margin-bottom:8px;">Agent Login</h2>
+        <p class="small-note" style="margin-top:0; margin-bottom:12px;">
+          Log in to view your recent photo requests and auto-fill your contact details.
+        </p>
+
+        <form id="login-form">
+          <label for="login_email">Email</label>
+          <input type="email" id="login_email" required />
+
+          <label for="login_password">Password</label>
+          <input type="password" id="login_password" required />
+
+          <div style="margin-top:10px;">
+            <button type="submit">Log In</button>
+          </div>
+
+          <div class="small-note" style="margin-top:4px;">
+            <a href="#" id="forgot-password-link">Forgot your password?</a>
+          </div>
+
+          <div id="login-message" class="message"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========= PROFILE MODAL (PROFILE + JOBS + CHANGE PASSWORD) ========= -->
+    <div id="profile-modal-overlay" class="modal-overlay">
+      <div class="modal-card" id="profile-modal">
+        <button type="button" id="close-profile-modal" class="modal-close">&times;</button>
+        <h2 style="margin-top:0; margin-bottom:8px;">Your Profile</h2>
+        <p class="small-note" style="margin-top:0; margin-bottom:12px;">
+          Update your contact details, review recent jobs, and change your password.
+        </p>
+
+        <!-- Profile form -->
+        <form id="profile-form" style="margin-top:12px;">
+          <label for="profile_first_name">First Name</label>
+          <input type="text" id="profile_first_name" />
+
+          <label for="profile_last_name">Last Name</label>
+          <input type="text" id="profile_last_name" />
+
+          <label for="profile_email">Email</label>
+          <input type="email" id="profile_email" />
+
+          <label for="profile_phone">Phone</label>
+          <input type="tel" id="profile_phone" />
+
+          <label for="profile_agency">Agency</label>
+          <select id="profile_agency">
+            <option value="">Select one</option>
+            <option>AirBNB</option>
+            <option>PenFed Gallo Realty</option>
+            <option>Berkshire Hathaway</option>
+            <option>Coldwell Banker</option>
+            <option>Compass Resort Realty</option>
+            <option>Central Reservations</option>
+            <option>Debbie Read Team</option>
+            <option>Keller Williams</option>
+            <option>LeeAnn Group</option>
+            <option>Northrop</option>
+            <option>PenFed</option>
+            <option>Shore4You</option>
+            <option>Sotheby's</option>
+            <option>Vacasa</option>
+            <option>VRBO</option>
+            <option>Other</option>
+          </select>
+
+          <button type="submit" style="margin-top:12px;">Save changes</button>
+          <div id="profile-message" class="message"></div>
+        </form>
+
+        <!-- Recent jobs -->
+        <div id="jobs-container" style="margin-top:20px; text-align:left;">
+          <h3>Your recent jobs</h3>
+          <ul id="jobs-list" class="small-note" style="padding-left:18px;"></ul>
+
+          <a href="#" id="jobs-show-all"
+             style="display:none; margin-top:8px; text-decoration:underline; font-size:13px;">
+            Show all
+          </a>
+        </div>
+
+
+        <!-- Change password -->
+        <div id="change-password-container" style="margin-top:20px; text-align:left;">
+          <h3>Change password</h3>
+          <form id="change-password-form">
+            <label for="old_password">Current password</label>
+            <input type="password" id="old_password" required />
+
+            <label for="new_password">New password</label>
+            <input type="password" id="new_password" required />
+
+            <label for="new_password_confirm">Confirm new password</label>
+            <input type="password" id="new_password_confirm" required />
+
+            <div class="helper">
+              Minimum 8 characters.
+            </div>
+
+            <div style="margin-top:10px;">
+              <button type="submit">Update Password</button>
+            </div>
+
+            <div id="change-password-message" class="message"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= REGISTER MODAL (CREATE ACCOUNT) ========= -->
+    <div id="register-modal-overlay" class="modal-overlay">
+      <div class="modal-card" id="register-modal">
+        <button type="button" id="close-register-modal" class="modal-close">&times;</button>
+
+        <h2 style="margin-top:0; margin-bottom:8px;">Create Agent Account</h2>
+        <p class="small-note" style="margin-top:0; margin-bottom:12px;">
+          Create an account to save your contact details and view your recent photo requests.
+        </p>
+
+        <form id="register-form">
+          <label for="reg_first_name">First Name</label>
+          <input type="text" id="reg_first_name" required />
+
+          <label for="reg_last_name">Last Name</label>
+          <input type="text" id="reg_last_name" required />
+
+          <label for="reg_email">Email</label>
+          <input type="email" id="reg_email" required />
+
+          <label for="reg_password">Password</label>
+          <input type="password" id="reg_password" required />
+
+          <div class="helper">
+            Minimum 8 characters.
+          </div>
+
+          <label for="reg_phone">Phone (optional)</label>
+          <input type="tel" id="reg_phone" />
+
+          <label for="reg_agency">Agency (optional)</label>
+          <select id="reg_agency">
+            <option value="">Select one</option>
+            <option>AirBNB</option>
+            <option>PenFed Gallo Realty</option>
+            <option>Berkshire Hathaway</option>
+            <option>Coldwell Banker</option>
+            <option>Compass Resort Realty</option>
+            <option>Central Reservations</option>
+            <option>Debbie Read Team</option>
+            <option>Keller Williams</option>
+            <option>LeeAnn Group</option>
+            <option>Northrop</option>
+            <option>PenFed</option>
+            <option>Shore4You</option>
+            <option>Sotheby's</option>
+            <option>Vacasa</option>
+            <option>VRBO</option>
+            <option>Other</option>
+          </select>
+
+          <div style="margin-top:10px;">
+            <button type="submit">Create Account</button>
+          </div>
+
+          <div id="register-message" class="message"></div>
+        </form>
+      </div>
+    </div>
+  </div> <!-- end .wrapper -->
+
+  <!-- ========= FRONT-END LOGIC ========= -->
+  <script>
+
+    const API_BASE = "https://githubrequestform.onrender.com";
+    function scrollToTopSafe() {
+      // 1) Try the current window (works when not embedded)
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      } catch (_) {}
+    
+      // 2) Fallbacks for older / weird browsers
+      try { document.documentElement.scrollTop = 0; } catch (_) {}
+      try { document.body.scrollTop = 0; } catch (_) {}
+    
+      // 3) If embedded (iframe), try scrolling the parent page
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        }
+      } catch (_) {
+        // parent may block cross-origin scrolling; ignore
+      }
+    }
+
+
+    function extractErrorMessage(data, fallback) {
+      if (!data) return fallback;
+      if (typeof data.detail === "string") return data.detail;
+      if (Array.isArray(data.detail) && data.detail.length && data.detail[0].msg) {
+        return data.detail[0].msg;
+      }
+      return fallback;
+    }
+
+
+    // ----- Element references -----
+    const form = document.getElementById("booking-form");
+    const messageEl = document.getElementById("message");
+    const formContainer = document.getElementById("form-container");
+    const thankyouContainer = document.getElementById("thankyou-container");
+    const newRequestBtn = document.getElementById("new-request-btn");
+    const heroImg = document.getElementById("hero-image");
+    const HERO_SRC = "https://githubrequestform.onrender.com/static/image.jpg";
+    const THANKYOU_SRC = "/static/thankYou.jpg";
+    const HERO_CROP = "50% 50%";      // center
+    const THANKYOU_CROP = "50% 65%";  // shifts focus upward 
+
+
+
+    // Entry overlay
+    const entryOverlay = document.getElementById("entry-overlay");
+    const entryLoginBtn = document.getElementById("entry-login-btn");
+    const entryCreateBtn = document.getElementById("entry-create-btn");
+    const entryGuestBtn = document.getElementById("entry-guest-btn");
+
+    // Top bar buttons
+    const topLoginBtn = document.getElementById("top-login-btn");
+    const topLogoutBtn = document.getElementById("top-logout-btn");
+    const topCreateBtn = document.getElementById("top-create-btn");
+    const topViewProfileBtn = document.getElementById("top-view-profile-btn");
+
+    // Login modal
+    const loginModalOverlay = document.getElementById("login-modal-overlay");
+    const closeLoginModalBtn = document.getElementById("close-login-modal");
+    const loginForm = document.getElementById("login-form");
+    const loginMessage = document.getElementById("login-message");
+    const forgotPasswordLink = document.getElementById("forgot-password-link");
+
+    // Register modal
+    const registerModalOverlay = document.getElementById("register-modal-overlay");
+    const registerForm = document.getElementById("register-form");
+    const registerMessage = document.getElementById("register-message");
+    const closeRegisterModalBtn = document.getElementById("close-register-modal");
+
+    // Profile modal
+    const profileModalOverlay = document.getElementById("profile-modal-overlay");
+    const closeProfileModalBtn = document.getElementById("close-profile-modal");
+    const profileForm = document.getElementById("profile-form");
+    const profileMessage = document.getElementById("profile-message");
+
+    // Jobs + change password (inside profile modal)
+    const jobsContainer = document.getElementById("jobs-container");
+    const jobsList = document.getElementById("jobs-list");
+    const jobsShowAll = document.getElementById("jobs-show-all");
+
+    const changePasswordForm = document.getElementById("change-password-form");
+    const changePasswordMessage = document.getElementById("change-password-message");
+
+    // Token & profile
+    let accessToken = window.localStorage.getItem("rom_token") || null;
+    let currentCustomerProfile = null;
+
+    // ----- Estimate renderer (NEW) -----
+    function renderEstimate(est) {
+      const box = document.getElementById("estimate-box");
+      const itemsEl = document.getElementById("estimate-items");
+      const totalEl = document.getElementById("estimate-total");
+      if (!box || !itemsEl || !totalEl) return;
+
+      if (!est) {
+        box.style.display = "none";
+        return;
+      }
+
+      itemsEl.innerHTML = "";
+      (est.line_items || []).forEach(li => {
+        const row = document.createElement("div");
+        row.textContent = `${li.label}: $${Number(li.line_total).toFixed(2)}`;
+        itemsEl.appendChild(row);
+      });
+
+      totalEl.textContent = `Total estimate: $${Number(est.total).toFixed(2)}`;
+      box.style.display = "block";
+    }
+
+
+    // ----- Helper: overlay controls -----
+    function closeEntryOverlay() {
+      if (entryOverlay) entryOverlay.style.display = "none";
+    }
+    function openLoginModal() {
+      if (loginMessage) {
+        loginMessage.textContent = "";
+        loginMessage.className = "message";
+      }
+      if (loginModalOverlay) loginModalOverlay.style.display = "block";
+    }
+    function closeLoginModal() {
+      if (loginModalOverlay) loginModalOverlay.style.display = "none";
+    }
+    function openRegisterModal() {
+      if (registerMessage) {
+        registerMessage.textContent = "";
+        registerMessage.className = "message";
+      }
+
+      // Prefill email/phone/agency if possible
+      const loginEmailEl = document.getElementById("login_email");
+      const bookingEmailEl = document.getElementById("email");
+      const phoneEl = document.getElementById("phone");
+      const agencySelect = document.getElementById("agency");
+      const regEmail = document.getElementById("reg_email");
+      const regPhone = document.getElementById("reg_phone");
+      const regAgency = document.getElementById("reg_agency");
+
+      if (regEmail) {
+        const loginEmail = loginEmailEl ? loginEmailEl.value.trim() : "";
+        const bookingEmail = bookingEmailEl ? bookingEmailEl.value.trim() : "";
+        if (loginEmail) regEmail.value = loginEmail;
+        else if (bookingEmail) regEmail.value = bookingEmail;
+      }
+      if (regPhone && phoneEl) {
+        regPhone.value = phoneEl.value.trim();
+      }
+      if (agencySelect && regAgency) {
+        regAgency.value = agencySelect.value;
+      }
+
+      if (registerModalOverlay) registerModalOverlay.style.display = "block";
+    }
+    function closeRegisterModal() {
+      if (registerModalOverlay) registerModalOverlay.style.display = "none";
+    }
+    function openProfileModal() {
+      if (!accessToken) {
+        // If not logged in, hint to log in
+        if (loginMessage) {
+          loginMessage.textContent = "Please log in to view your profile.";
+          loginMessage.className = "message error";
+        }
+        openLoginModal();
+        return;
+      }
+      if (profileModalOverlay) profileModalOverlay.style.display = "block";
+    }
+    function closeProfileModal() {
+      if (profileModalOverlay) profileModalOverlay.style.display = "none";
+    }
+
+    // ----- UI state for logged in/out -----
+    function updateTopBarForAuth() {
+      if (accessToken) {
+        if (topLoginBtn) topLoginBtn.style.display = "none";
+        if (topLogoutBtn) topLogoutBtn.style.display = "inline-block";
+        if (topCreateBtn) topCreateBtn.style.display = "none";
+        if (topViewProfileBtn) topViewProfileBtn.style.display = "inline-block";
+      } else {
+        if (topLoginBtn) topLoginBtn.style.display = "inline-block";
+        if (topLogoutBtn) topLogoutBtn.style.display = "none";
+        if (topCreateBtn) topCreateBtn.style.display = "inline-block";
+        if (topViewProfileBtn) topViewProfileBtn.style.display = "none";
+        if (jobsContainer) jobsContainer.style.display = "none";
+      }
+    }
+
+    // ----- Prefill booking form from /me -----
+    function prefillFormFromProfile() {
+      if (!currentCustomerProfile) return;
+
+      const { first_name, last_name, email, phone, company } = currentCustomerProfile;
+
+      const firstNameInput = document.getElementById("first_name");
+      const lastNameInput = document.getElementById("last_name");
+      const emailInput = document.getElementById("email");
+      const phoneInput = document.getElementById("phone");
+      const agencySelect = document.getElementById("agency");
+
+      if (firstNameInput && first_name) firstNameInput.value = first_name;
+      if (lastNameInput && last_name) lastNameInput.value = last_name;
+      if (emailInput && email) emailInput.value = email;
+      if (phoneInput && phone) phoneInput.value = phone;
+
+      if (agencySelect && company) {
+        const options = Array.from(agencySelect.options);
+        const match = options.find(opt => opt.text.trim() === company.trim());
+        if (match) {
+          agencySelect.value = match.value;
+        }
+      }
+    }
+
+    async function loadProfileAndPrefill() {
+      if (!accessToken) return;
+      try {
+        const resp = await fetch(API_BASE + "/me", {
+          method: "GET",
+          headers: { "Authorization": "Bearer " + accessToken }
+        });
+        if (!resp.ok) {
+          if (resp.status === 401) {
+            accessToken = null;
+            window.localStorage.removeItem("rom_token");
+            updateTopBarForAuth();
+          }
+          return;
+        }
+        const profile = await resp.json();
+        currentCustomerProfile = profile;
+        prefillFormFromProfile();
+      } catch (err) {
+        console.error("Error loading profile for prefill:", err);
+      }
+    }
+
+    function fillProfileForm(me) {
+      if (!me) return;
+      const pf = document.getElementById("profile_first_name");
+      const pl = document.getElementById("profile_last_name");
+      const pe = document.getElementById("profile_email");
+      const pp = document.getElementById("profile_phone");
+      const pa = document.getElementById("profile_agency");
+
+      if (pf) pf.value = me.first_name || "";
+      if (pl) pl.value = me.last_name || "";
+      if (pe) pe.value = me.email || "";
+      if (pp) pp.value = me.phone || "";
+
+      if (pa) {
+        const agency = me.company || "";
+        let found = false;
+        for (let i = 0; i < pa.options.length; i++) {
+          if (pa.options[i].value === agency) {
+            pa.selectedIndex = i;
+            found = true;
+            break;
+          }
+        }
+        if (!found) pa.value = "";
+      }
+    }
+
+    async function refreshProfile() {
+      if (!accessToken) {
+        currentCustomerProfile = null;
+        updateTopBarForAuth();
+        return;
+      }
+      try {
+        const resp = await fetch(API_BASE + "/me", {
+          method: "GET",
+          headers: { "Authorization": "Bearer " + accessToken }
+        });
+        if (!resp.ok) {
+          if (resp.status === 401) {
+            accessToken = null;
+            window.localStorage.removeItem("rom_token");
+          }
+          currentCustomerProfile = null;
+          updateTopBarForAuth();
+          return;
+        }
+        const me = await resp.json();
+        currentCustomerProfile = me;
+        fillProfileForm(me);
+        updateTopBarForAuth();
+      } catch (err) {
+        console.error("Error refreshing profile:", err);
+        currentCustomerProfile = null;
+        updateTopBarForAuth();
+      }
+    }
+
+    // Load recent jobs
+    let cachedAllJobs = null;
+
+    function renderJobs(jobs) {
+      jobsList.innerHTML = "";
+
+      if (!jobs.length) {
+        const li = document.createElement("li");
+        li.textContent = "No jobs found yet.";
+        jobsList.appendChild(li);
+        return;
+      }
+
+      jobs.forEach(job => {
+        const li = document.createElement("li");
+
+        const dateText = job.job_date || "Date TBD";
+        const addressText = [job.address, job.city].filter(Boolean).join(", ");
+        const servicesText = job.service_raw || "";
+        const invoiceText = job.invoice_number ? ` (Invoice #${job.invoice_number})` : "";
+
+        // source removed
+        li.textContent = `${dateText} — ${addressText} — ${servicesText}${invoiceText}`;
+        jobsList.appendChild(li);
+      });
+    }
+
+    async function loadMyJobs() {
+      if (!accessToken) {
+        if (jobsContainer) jobsContainer.style.display = "none";
+        if (jobsShowAll) jobsShowAll.style.display = "none";
+        cachedAllJobs = null;
+        return;
+      }
+
+      try {
+        // Fetch 6 so we know whether to show "Show all"
+       const resp = await fetch(API_BASE + "/my-jobs?limit=6", {
+          method: "GET",
+          headers: { "Authorization": "Bearer " + accessToken }
+        });
+
+        if (!resp.ok) {
+          console.warn("Failed to load jobs, status:", resp.status);
+          if (jobsContainer) jobsContainer.style.display = "none";
+          if (jobsShowAll) jobsShowAll.style.display = "none";
+          return;
+        }
+
+        const jobs = await resp.json();
+
+        renderJobs(jobs.slice(0, 5));
+
+        if (jobsShowAll) {
+          jobsShowAll.style.display = jobs.length > 5 ? "inline-block" : "none";
+        }
+
+        if (jobsContainer) jobsContainer.style.display = "block";
+      } catch (err) {
+        console.error("Error loading jobs:", err);
+        if (jobsContainer) jobsContainer.style.display = "none";
+        if (jobsShowAll) jobsShowAll.style.display = "none";
+      }
+    }
+
+    // Show all (click handler) — MUST be outside loadMyJobs()
+    if (jobsShowAll) {
+      jobsShowAll.addEventListener("click", async (e) => {
+        e.preventDefault();
+        if (!accessToken) return;
+
+        try {
+          if (!cachedAllJobs) {
+            const resp = await fetch(API_BASE + "/my-jobs?limit=0", {
+              method: "GET",
+              headers: { "Authorization": "Bearer " + accessToken }
+            });
+
+            if (!resp.ok) {
+              console.warn("Failed to load all jobs, status:", resp.status);
+              return;
+            }
+
+            cachedAllJobs = await resp.json();
+          }
+
+          renderJobs(cachedAllJobs);
+          jobsShowAll.style.display = "none";
+        } catch (err) {
+          console.error("Error loading all jobs:", err);
+        }
+      });
+    }
+
+
+    // ----- Booking form submit -----
+    if (form) {
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        messageEl.textContent = "";
+        messageEl.className = "message";
+
+        const btn = form.querySelector("button[type='submit']");
+        btn.disabled = true;
+        btn.textContent = "Sending...";
+
+        // TOS check
+        const tosAccepted = document.getElementById("tos_accept").checked;
+        if (!tosAccepted) {
+          messageEl.textContent = "Please accept the Terms of Service.";
+          messageEl.classList.add("error");
+          btn.disabled = false;
+          btn.textContent = "Submit";
+          return;
+        }
+
+        // During shoot check
+        const duringShootAgreement = document.getElementById("during_shoot_agreement").checked;
+        if (!duringShootAgreement) {
+          messageEl.textContent = "Please confirm the 'During The Shoot' agreement.";
+          messageEl.classList.add("error");
+          btn.disabled = false;
+          btn.textContent = "Submit";
+          return;
+        }
+
+        // Services
+        const serviceCheckboxes = form.querySelectorAll(".services-group input[type='checkbox']");
+        const services = [];
+        serviceCheckboxes.forEach(cb => { if (cb.checked) services.push(cb.value); });
+        if (!services.length) {
+          messageEl.textContent = "Please select at least one service.";
+          messageEl.classList.add("error");
+          btn.disabled = false;
+          btn.textContent = "Submit";
+          return;
+        }
+
+        // Views
+        const viewCheckboxes = form.querySelectorAll(".views-group input[type='checkbox']");
+        const views = [];
+        viewCheckboxes.forEach(cb => { if (cb.checked) views.push(cb.value); });
+
+        // First time?
+        const isFirstTimeEl = form.querySelector("input[name='is_first_time']:checked");
+        let isFirstTime = null;
+        if (isFirstTimeEl) {
+          isFirstTime = isFirstTimeEl.value === "yes";
+        }
+
+        // Access type
+        const accessTypeEl = form.querySelector("input[name='access_type']:checked");
+        const accessType = accessTypeEl ? accessTypeEl.value : null;
+
+        const payload = {
+          first_name: document.getElementById("first_name").value.trim(),
+          last_name: document.getElementById("last_name").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          phone: document.getElementById("phone").value.trim(),
+          is_first_time: isFirstTime,
+          agency: document.getElementById("agency").value || null,
+          usage: document.getElementById("usage").value || null,
+          address: document.getElementById("address").value.trim(),
+          city: document.getElementById("city").value.trim(),
+          building_name: document.getElementById("building_name").value.trim() || null,
+          bedrooms: document.getElementById("bedrooms").value || null,
+          bathrooms: document.getElementById("bathrooms").value || null,
+          listing_size: document.getElementById("listing_size").value || null,
+          views: views.length > 0 ? views : null,
+          finished_basement: document.getElementById("finished_basement").value || null,
+          estimated_price_band: document.getElementById("estimated_price_band").value || null,
+          date_listing_ready: document.getElementById("date_listing_ready").value || null,
+          date_to_go_live: document.getElementById("date_to_go_live").value || null,
+          desired_date: null,
+          is_vacant: document.getElementById("is_vacant").value || null,
+          during_shoot_agreement: duringShootAgreement,
+          access_type: accessType,
+          access_code: document.getElementById("access_code").value.trim() || null,
+          owner_contact_info: document.getElementById("owner_contact_info").value.trim() || null,
+          services: services,
+          notes_for_photographer: document.getElementById("notes").value.trim() || null
+        };
+
+        try {
+          const resp = await fetch(API_BASE + "/jobs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (!resp.ok) {
+            const errData = await resp.json().catch(() => ({}));
+            console.error("Error response:", errData);
+            throw new Error("Request failed with status " + resp.status);
+          }
+
+          const result = await resp.json(); // NEW: keep response so we can show estimate
+
+          // Switch to Thank You view
+          form.reset();
+          messageEl.textContent = "";
+          messageEl.className = "message";
+          formContainer.style.display = "none";
+          thankyouContainer.style.display = "block";
+          if (heroImg) {
+            heroImg.src = THANKYOU_SRC;
+            heroImg.style.objectPosition = THANKYOU_CROP;
+          }
+          renderEstimate(result.estimate);
+          scrollToTopSafe();
+          try { window.parent.postMessage({ type: "ROM_SCROLL_TO_FORM_TOP" }, "https://www.ryanowenphotography.com"); } catch (_) {}
+        } catch (err) {
+          console.error(err);
+          messageEl.textContent = "Sorry, something went wrong. Please try again or email Ryan directly.";
+          messageEl.classList.add("error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Submit";
+        }
+      });
+    }
+
+    // New request button (from thank-you view)
+    if (newRequestBtn) {
+      newRequestBtn.addEventListener("click", () => {
+        thankyouContainer.style.display = "none";
+        formContainer.style.display = "block";
+        if (heroImg) heroImg.src = HERO_SRC;
+        messageEl.textContent = "";
+        messageEl.className = "message";
+        form.reset();
+        renderEstimate(null);
+        scrollToTopSafe();
+        try { window.parent.postMessage({ type: "ROM_SCROLL_TO_FORM_TOP" }, "https://www.ryanowenphotography.com"); } catch (_) {}
+      });
+    }
+
+
+    // ----- Login handler -----
+    if (loginForm) {
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        loginMessage.textContent = "";
+        loginMessage.className = "message";
+
+        const btn = loginForm.querySelector("button[type='submit']");
+        btn.disabled = true;
+        btn.textContent = "Logging in...";
+
+        const email = document.getElementById("login_email").value.trim();
+        const password = document.getElementById("login_password").value;
+
+        try {
+          const resp = await fetch(API_BASE + "/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+          });
+
+          if (!resp.ok) {
+            const errData = await resp.json().catch(() => ({}));
+            console.error("Login error:", errData);
+            if (resp.status === 401) {
+              loginMessage.textContent = "Incorrect email or password.";
+            } else {
+              loginMessage.textContent = "Login failed. Please try again.";
+            }
+            loginMessage.classList.add("error");
+            return;
+          }
+
+          const data = await resp.json();
+          accessToken = data.access_token;
+          window.localStorage.setItem("rom_token", accessToken);
+
+          loginMessage.textContent = "Logged in successfully.";
+          loginMessage.classList.add("success");
+
+          await loadProfileAndPrefill();
+          await loadMyJobs();
+          await refreshProfile();
+
+         // If temp password was used, guide user to Change Password in Profile
+         if (data.must_change_password) {
+           closeLoginModal();
+           openProfileModal();
+
+           // ensure profile data is loaded
+           await loadProfileAndPrefill();
+           await loadMyJobs();
+           await refreshProfile();
+
+           // scroll to change password section and focus old password
+           setTimeout(() => {
+             const cp = document.getElementById("change-password-container");
+             const oldPw = document.getElementById("old_password");
+             if (cp) cp.scrollIntoView({ behavior: "smooth", block: "start" });
+             if (oldPw) oldPw.focus();
+             if (changePasswordMessage) {
+               changePasswordMessage.textContent = "Temporary password detected — please set a new password now.";
+               changePasswordMessage.className = "message error";
+             }
+           }, 150);
+         } else {
+           // Close login modal after short delay (normal login)
+           setTimeout(() => {
+             closeLoginModal();
+           }, 600);
+         }
+
+        } catch (err) {
+          console.error(err);
+          loginMessage.textContent = "Login failed. Please try again.";
+          loginMessage.classList.add("error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Log In";
+        }
+      });
+    }
+
+    // ----- Forgot password -----
+    if (forgotPasswordLink) {
+      forgotPasswordLink.addEventListener("click", async (event) => {
+        event.preventDefault();
+        loginMessage.textContent = "";
+        loginMessage.className = "message";
+
+        const email = document.getElementById("login_email").value.trim();
+        if (!email) {
+          loginMessage.textContent = "Please enter your email above, then click 'Forgot your password?' again.";
+          loginMessage.classList.add("error");
+          return;
+        }
+
+        try {
+          const resp = await fetch(API_BASE + "/auth/forgot-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+          });
+
+          if (!resp.ok) {
+            const errData = await resp.json().catch(() => ({}));
+            console.error("Forgot password error:", errData);
+            loginMessage.textContent = "If that email exists, a reset link will be sent.";
+            loginMessage.classList.add("success");
+            return;
+          }
+
+          loginMessage.textContent = "If that email exists, a reset link will be sent.";
+          loginMessage.classList.add("success");
+        } catch (err) {
+          console.error("Forgot password error:", err);
+          loginMessage.textContent = "Could not start reset. Please try again.";
+          loginMessage.classList.add("error");
+        }
+      });
+    }
+
+    // ----- Register handler (create account + log in) -----
+    if (registerForm) {
+      registerForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        registerMessage.textContent = "";
+        registerMessage.className = "message";
+
+        const btn = registerForm.querySelector("button[type='submit']");
+        btn.disabled = true;
+        btn.textContent = "Creating account...";
+
+        const first_name = document.getElementById("reg_first_name").value.trim();
+        const last_name = document.getElementById("reg_last_name").value.trim();
+        const email = document.getElementById("reg_email").value.trim();
+        const password = document.getElementById("reg_password").value;
+        const phone = document.getElementById("reg_phone").value.trim() || null;
+        const agency = document.getElementById("reg_agency").value || null;
+
+        try {
+          const resp = await fetch(API_BASE + "/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              first_name,
+              last_name,
+              email,
+              password,
+              phone,
+              agency
+            })
+          });
+
+          const data = await resp.json().catch(() => ({}));
+
+          if (!resp.ok) {
+            console.error("Register error:", data);
+            const msg = extractErrorMessage(
+              data,
+              "Password must be at least 8 characters."
+            );
+            registerMessage.textContent = msg;
+
+            registerMessage.classList.add("error");
+            return;
+          }
+
+          accessToken = data.access_token;
+          window.localStorage.setItem("rom_token", accessToken);
+
+          registerMessage.textContent = "Account created and logged in.";
+          registerMessage.classList.add("success");
+
+          await loadProfileAndPrefill();
+          await loadMyJobs();
+          await refreshProfile();
+
+          const regPasswordInput = document.getElementById("reg_password");
+          if (regPasswordInput) regPasswordInput.value = "";
+
+          setTimeout(() => {
+            closeRegisterModal();
+          }, 700);
+        } catch (err) {
+          console.error("Register error:", err);
+          registerMessage.textContent = "Could not create account. Please try again.";
+          registerMessage.classList.add("error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Create Account";
+        }
+      });
+    }
+
+    // ----- Change password handler -----
+    if (changePasswordForm) {
+      changePasswordForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        changePasswordMessage.textContent = "";
+        changePasswordMessage.className = "message";
+
+        if (!accessToken) {
+          changePasswordMessage.textContent = "You must be logged in to change your password.";
+          changePasswordMessage.classList.add("error");
+          return;
+        }
+
+        const oldPassword = document.getElementById("old_password").value;
+        const newPassword = document.getElementById("new_password").value;
+        const newPasswordConfirm = document.getElementById("new_password_confirm").value;
+
+        if (newPassword !== newPasswordConfirm) {
+          changePasswordMessage.textContent = "New passwords do not match.";
+          changePasswordMessage.classList.add("error");
+          return;
+        }
+
+        const btn = changePasswordForm.querySelector("button[type='submit']");
+        btn.disabled = true;
+        btn.textContent = "Updating...";
+
+        try {
+          const resp = await fetch(API_BASE + "/auth/change-password", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + accessToken
+            },
+            body: JSON.stringify({
+              old_password: oldPassword,
+              new_password: newPassword
+            })
+          });
+
+          const data = await resp.json().catch(() => ({}));
+          if (!resp.ok) {
+            console.error("Change password error:", data);
+            const msg = extractErrorMessage(
+              data,
+              "Password must be at least 8 characters."
+            );
+            changePasswordMessage.textContent = msg;
+
+            changePasswordMessage.classList.add("error");
+            return;
+          }
+
+          changePasswordMessage.textContent = "Password updated successfully.";
+          changePasswordMessage.classList.add("success");
+          document.getElementById("old_password").value = "";
+          document.getElementById("new_password").value = "";
+          document.getElementById("new_password_confirm").value = "";
+        } catch (err) {
+          console.error("Change password error:", err);
+          changePasswordMessage.textContent = "Password update failed. Please try again.";
+          changePasswordMessage.classList.add("error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Update Password";
+        }
+      });
+    }
+
+    // ----- Profile form submit -----
+    if (profileForm) {
+      profileForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        profileMessage.textContent = "";
+        profileMessage.className = "message";
+
+        if (!accessToken) {
+          profileMessage.textContent = "Please log in first.";
+          profileMessage.classList.add("error");
+          return;
+        }
+
+        const btn = profileForm.querySelector("button[type='submit']");
+        btn.disabled = true;
+        btn.textContent = "Saving...";
+
+        const payload = {
+          first_name: document.getElementById("profile_first_name").value.trim() || null,
+          last_name: document.getElementById("profile_last_name").value.trim() || null,
+          email: document.getElementById("profile_email").value.trim() || null,
+          phone: document.getElementById("profile_phone").value.trim() || null,
+          agency: document.getElementById("profile_agency").value || null
+        };
+
+        try {
+          const resp = await fetch(API_BASE + "/me", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!resp.ok) {
+            const errData = await resp.json().catch(() => ({}));
+            console.error("Profile update error:", errData);
+            profileMessage.textContent = errData.detail || "Profile update failed. Please try again.";
+            profileMessage.classList.add("error");
+            return;
+          }
+
+          const updated = await resp.json();
+          fillProfileForm(updated);
+          profileMessage.textContent = "Profile updated.";
+          profileMessage.classList.add("success");
+
+          await loadMyJobs();
+          await refreshProfile();
+        } catch (err) {
+          console.error(err);
+          profileMessage.textContent = "Profile update failed. Please try again.";
+          profileMessage.classList.add("error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Save changes";
+        }
+      });
+    }
+
+    // ----- Entry overlay buttons -----
+    if (entryGuestBtn) {
+      entryGuestBtn.addEventListener("click", () => {
+        closeEntryOverlay();
+      });
+    }
+    if (entryLoginBtn) {
+      entryLoginBtn.addEventListener("click", () => {
+        closeEntryOverlay();
+        openLoginModal();
+      });
+    }
+    if (entryCreateBtn) {
+      entryCreateBtn.addEventListener("click", () => {
+        closeEntryOverlay();
+        openRegisterModal();
+      });
+    }
+
+    // ----- Login modal open/close from top bar -----
+    if (topLoginBtn) {
+      topLoginBtn.addEventListener("click", () => {
+        openLoginModal();
+      });
+    }
+    if (closeLoginModalBtn) {
+      closeLoginModalBtn.addEventListener("click", () => {
+        closeLoginModal();
+      });
+      loginModalOverlay.addEventListener("click", (e) => {
+        if (e.target === loginModalOverlay) closeLoginModal();
+      });
+    }
+
+    // ----- Register modal open/close from top bar -----
+    if (topCreateBtn) {
+      topCreateBtn.addEventListener("click", () => {
+        openRegisterModal();
+      });
+    }
+    if (closeRegisterModalBtn) {
+      closeRegisterModalBtn.addEventListener("click", () => {
+        closeRegisterModal();
+      });
+      registerModalOverlay.addEventListener("click", (e) => {
+        if (e.target === registerModalOverlay) closeRegisterModal();
+      });
+    }
+
+    // ----- Profile modal open/close from top bar -----
+    if (topViewProfileBtn) {
+      topViewProfileBtn.addEventListener("click", async () => {
+        await refreshProfile();
+        await loadMyJobs();
+        openProfileModal();
+      });
+    }
+    if (closeProfileModalBtn) {
+      closeProfileModalBtn.addEventListener("click", () => {
+        closeProfileModal();
+      });
+      profileModalOverlay.addEventListener("click", (e) => {
+        if (e.target === profileModalOverlay) closeProfileModal();
+      });
+    }
+
+    // ----- Logout -----
+    if (topLogoutBtn) {
+      topLogoutBtn.addEventListener("click", () => {
+        accessToken = null;
+        window.localStorage.removeItem("rom_token");
+        currentCustomerProfile = null;
+        updateTopBarForAuth();
+        if (loginMessage) {
+          loginMessage.textContent = "Logged out.";
+          loginMessage.className = "message success";
+        }
+        closeProfileModal();
+      });
+    }
+
+    // ----- On page load: if token exists, skip overlay & load profile -----
+    if (accessToken) {
+      closeEntryOverlay();
+      updateTopBarForAuth();
+      loadProfileAndPrefill();
+      loadMyJobs();
+      refreshProfile();
+    } else {
+      updateTopBarForAuth();
+    }
+  </script>
+</body>
+</html>

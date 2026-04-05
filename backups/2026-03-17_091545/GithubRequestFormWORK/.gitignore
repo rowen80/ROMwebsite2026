@@ -1,0 +1,21 @@
+# secrets
+.env
+*.env
+*token*
+*.key
+
+# databases
+*.db
+*.sqlite
+*.sqlite3
+
+# python junk
+__pycache__/
+*.pyc
+.DS_Store
+
+# private/business data
+ROM_FINACIALS_MASTER*
+customer_summary.csv
+_notes/
+_QRcodes/

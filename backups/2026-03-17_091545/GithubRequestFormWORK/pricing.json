@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "currency": "USD",
+
+  "sqft_tiers": [
+    { "max_sqft": 1000, "multiplier": 1.00 },
+    { "max_sqft": 2000, "multiplier": 1.0 },
+    { "max_sqft": 3000, "multiplier": 1.0 },
+    { "max_sqft": 4000, "multiplier": 1.0 },
+    { "max_sqft": 5000, "multiplier": 1.0 },
+    { "max_sqft": 999999, "multiplier": 1.0 }
+  ],
+
+  "price_band_multipliers": {
+    "$0- 500k": 1.00,
+    "$500- 750k": 1.0,
+    "$750k- 1M": 1.0,
+    "$1M- 1.5M": 1.0,
+    "$1.5M - 2M": 1.0,
+    "$2M+": 1.45
+  },
+
+  "room_multipliers": {
+    "bedrooms": {
+      "1 Bedroom": 1.69,
+      "2 Bedrooms": 1.79,
+      "3 Bedrooms": 1.89,
+      "4 Bedrooms": 1.99,
+      "5 Bedrooms": 2.09,
+      "More than 5 Bedrooms (please list in Notes below)": 2.19,
+      "Lot (Please provide a site plan in the email thread)": 0.99
+    },
+    "bathrooms": {
+      "1 Bathroom": 1.0,
+      "2 Bathrooms": 1.0,
+      "3 Bathrooms": 1.0,
+      "4 Bathrooms": 1.0,
+      "More Than 4 Bathrooms": 1.0,
+      "N/A": 1.00
+    }
+  },
+
+    "finished_basement_multipliers": {
+      "Yes, There is a Finished Basement": 1.05,
+      "No, There is not a Basement": 1.00
+    },
+
+  "services": {
+    "Basic Photos": { "base": 100, "apply_multipliers": true },
+    "Drone Photos": { "base": 59, "apply_multipliers": false },
+    "Twilight Photos": { "base": 199, "apply_multipliers": false },
+    "Video": { "base": 299, "apply_multipliers": false },
+    "Instagram Reels (Vertical Video)": { "base": 99, "apply_multipliers": false },
+    "Community Photos": { "base": 49, "apply_multipliers": false },
+    "Zillow 360 Tour": { "base": 99, "apply_multipliers": false },
+    "Zillow Floor Plan": { "base": 0, "apply_multipliers": false },
+    "Matterport 360 (Must Have Matterport Account)": { "base": 99, "apply_multipliers": false },
+    "Catalogue Style Photos (Quality not Quantity)": { "base": 399, "apply_multipliers": false }
+  },
+
+  "bundles": [
+    {
+      "name": "Example Bundle",
+      "includes_all": ["Basic Photos", "Drone Photos"],
+      "price_override": 0
+    }
+  ]
+}
