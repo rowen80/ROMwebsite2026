@@ -667,10 +667,10 @@
             <label><input type="checkbox" value="Twilight Photos" /> Twilight Photos <button type="button" class="info-btn" data-target="info-twilight" aria-label="More info about Twilight Photos">ⓘ</button></label>
             <div class="info-popover" id="info-twilight">
               <img src="/images/twilight.jpg" alt="Twilight Photo example" />
-              <p>Sunset exteriors with enhanced lighting make your listing glow. Typically 5-10 "Hero" shots. <strong><a href="#" onclick="document.querySelector('input[value=\'Interior Twilights\']').checked=true; return false;" style="color:#0066cc;">Click here to add interior twilights</a></strong> (note: may require two shoots)</p>
+              <p>Sunset exteriors with enhanced lighting make your listing glow. Typically 5-10 "Hero" shots. <strong><a href="#" onclick="document.getElementById('row-interior-twilights').style.display=''; document.querySelector('input[value=\'Interior Twilights\']').checked=true; return false;" style="color:#0066cc;">Click here to add interior twilights</a></strong> (note: may require two shoots)</p>
             </div>
           </div>
-          <label><input type="checkbox" value="Interior Twilights" /> Interior Twilights</label>
+          <label id="row-interior-twilights" style="display:none"><input type="checkbox" value="Interior Twilights" /> Interior Twilights</label>
           <div class="service-row">
             <label><input type="checkbox" value="Video" /> Video <button type="button" class="info-btn" data-target="info-video" aria-label="More info about Video">ⓘ</button></label>
             <div class="info-popover" id="info-video">
@@ -681,10 +681,10 @@
           <div class="service-row">
             <label><input type="checkbox" value="Community Photos" /> Community Photos <button type="button" class="info-btn" data-target="info-community" aria-label="More info about Community Photos">ⓘ</button></label>
             <div class="info-popover" id="info-community">
-              <p>Document the amenities that make a building or community worth buying into. <strong><a href="#" onclick="document.querySelector('input[value=\'Community Interiors\']').checked=true; return false;" style="color:#0066cc;">Click here if there are indoor amenities</a></strong> (Permission must be granted by management prior to arrival and FOB or code provided)</p>
+              <p>Document the amenities that make a building or community worth buying into. <strong><a href="#" onclick="document.getElementById('row-community-interiors').style.display=''; document.querySelector('input[value=\'Community Interiors\']').checked=true; return false;" style="color:#0066cc;">Click here if there are indoor amenities</a></strong> (Permission must be granted by management prior to arrival and FOB or code provided)</p>
             </div>
           </div>
-          <label><input type="checkbox" value="Community Interiors" /> Community Interiors</label>
+          <label id="row-community-interiors" style="display:none"><input type="checkbox" value="Community Interiors" /> Community Interiors</label>
           <label><input type="checkbox" value="Zillow Virtual Tour" /> Zillow Virtual Tour</label>
           <div class="service-row">
             <label><input type="checkbox" value="Zillow Floor Plan" /> Zillow Floor Plan <button type="button" class="info-btn" data-target="info-floorplan" aria-label="More info about Zillow Floor Plan">ⓘ</button></label>
@@ -1904,17 +1904,50 @@
       updateTopBarForAuth();
     }
 
-    // ----- Service info popovers -----
+    // ----- Reset sub-services on page load -----
+    var interiorTwilightRow = document.getElementById('row-interior-twilights');
+    var communityInteriorsRow = document.getElementById('row-community-interiors');
+    if (interiorTwilightRow) {
+      interiorTwilightRow.style.display = 'none';
+      var cb = interiorTwilightRow.querySelector('input[type="checkbox"]');
+      if (cb) cb.checked = false;
+    }
+    if (communityInteriorsRow) {
+      communityInteriorsRow.style.display = 'none';
+      var cb2 = communityInteriorsRow.querySelector('input[type="checkbox"]');
+      if (cb2) cb2.checked = false;
+    }
+
+    // ----- Service info popovers (hover) -----
     document.querySelectorAll('.info-btn').forEach(function(btn) {
+      var popover = document.getElementById(btn.dataset.target);
+      if (!popover) return;
+      var hideTimer;
+
+      function showPopover() {
+        clearTimeout(hideTimer);
+        document.querySelectorAll('.info-popover.open').forEach(function(p) {
+          if (p !== popover) p.classList.remove('open');
+        });
+        popover.classList.add('open');
+      }
+      function scheduleHide() {
+        hideTimer = setTimeout(function() { popover.classList.remove('open'); }, 200);
+      }
+
+      btn.addEventListener('mouseenter', showPopover);
+      btn.addEventListener('mouseleave', scheduleHide);
+      popover.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+      popover.addEventListener('mouseleave', scheduleHide);
+
+      // keep click working for mobile
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
-        var popover = document.getElementById(btn.dataset.target);
-        if (!popover) return;
-        var isOpen = popover.classList.contains('open');
-        document.querySelectorAll('.info-popover.open').forEach(function(p) {
-          p.classList.remove('open');
-        });
-        if (!isOpen) popover.classList.add('open');
+        if (popover.classList.contains('open')) {
+          popover.classList.remove('open');
+        } else {
+          showPopover();
+        }
       });
     });
     document.addEventListener('click', function() {
