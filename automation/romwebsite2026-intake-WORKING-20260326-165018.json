@@ -190,6 +190,7 @@
             "Sales/Rentals": "={{ $('Webhook').item.json.body.listing.usage || \"\" }}",
             "Service": "={{ Array.isArray($('Webhook').item.json.body.services.selected) ? $('Webhook').item.json.body.services.selected.join(\", \") : String($('Webhook').item.json.body.services.selected || \"\") }}",
             "Estimated Line Items": "={{ $('Webhook').item.json.body.estimate.lineItemsText }}",
+            "Estimated Total": "={{ $('Webhook').item.json.body.estimate.estimatedTotal }}",
             "BillingEmail": ""
           }
         },
