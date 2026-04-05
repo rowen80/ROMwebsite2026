@@ -162,19 +162,6 @@
     },
     {
       "parameters": {
-        "jsCode": "const wb = $('Webhook').item.json.body;\nreturn [{\n  json: {\n    \"SubmittedAt\": wb.meta.submittedAt,\n    \"ClientFirstName\": wb.customer.firstName,\n    \"ClientLastName\": wb.customer.lastName,\n    \"ClientEmail\": wb.customer.email,\n    \"ClientPhone\": wb.customer.phone || \"\",\n    \"Company\": wb.customer.agency || \"\",\n    \"Bedrooms\": wb.listing.bedrooms || \"\",\n    \"List Price\": wb.listing.estimatedPriceBand || \"\",\n    \"Sq Ft\": wb.listing.listingSize || \"\",\n    \"Listing Address\": wb.listing.address,\n    \"City\": wb.listing.city || \"\",\n    \"Sales/Rentals\": wb.listing.usage || \"\",\n    \"Service\": Array.isArray(wb.services.selected) ? wb.services.selected.join(\", \") : String(wb.services.selected || \"\"),\n    \"Estimated Line Items\": wb.estimate.lineItemsText,\n    \"Estimated Total\": wb.estimate.estimatedTotal\n  }\n}];"
-      },
-      "id": "b7e3f1a2-c4d5-4e6f-8a9b-0c1d2e3f4a5b",
-      "name": "Build Sheet Row",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        672,
-        0
-      ]
-    },
-    {
-      "parameters": {
         "operation": "append",
         "documentId": {
           "__rl": true,
@@ -187,10 +174,24 @@
           "mode": "name"
         },
         "columns": {
-          "mappingMode": "autoMapInputData",
-          "value": {},
-          "matchingColumns": [],
-          "schema": []
+          "mappingMode": "defineBelow",
+          "value": {
+            "SubmittedAt": "={{ $('Webhook').item.json.body.meta.submittedAt }}",
+            "ClientFirstName": "={{ $('Webhook').item.json.body.customer.firstName }}",
+            "ClientLastName": "={{ $('Webhook').item.json.body.customer.lastName }}",
+            "ClientEmail": "={{ $('Webhook').item.json.body.customer.email }}",
+            "ClientPhone": "={{ $('Webhook').item.json.body.customer.phone || \"\" }}",
+            "Company": "={{ $('Webhook').item.json.body.customer.agency || \"\" }}",
+            "Bedrooms": "={{ $('Webhook').item.json.body.listing.bedrooms || \"\" }}",
+            "List Price": "={{ $('Webhook').item.json.body.listing.estimatedPriceBand || \"\" }}",
+            "Sq Ft": "={{ $('Webhook').item.json.body.listing.listingSize || \"\" }}",
+            "Listing Address": "={{ $('Webhook').item.json.body.listing.address }}",
+            "City": "={{ $('Webhook').item.json.body.listing.city || \"\" }}",
+            "Sales/Rentals": "={{ $('Webhook').item.json.body.listing.usage || \"\" }}",
+            "Service": "={{ Array.isArray($('Webhook').item.json.body.services.selected) ? $('Webhook').item.json.body.services.selected.join(\", \") : String($('Webhook').item.json.body.services.selected || \"\") }}",
+            "Estimated Line Items": "={{ $('Webhook').item.json.body.estimate.lineItemsText }}",
+            "Estimated Total": "={{ $('Webhook').item.json.body.estimate.estimatedTotal }}"
+          }
         },
         "options": {}
       },
@@ -199,7 +200,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        896,
+        880,
         0
       ],
       "credentials": {
@@ -277,17 +278,6 @@
       ]
     },
     "Send Client Email": {
-      "main": [
-        [
-          {
-            "node": "Build Sheet Row",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Build Sheet Row": {
       "main": [
         [
           {
