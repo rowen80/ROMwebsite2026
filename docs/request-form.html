@@ -10,7 +10,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Book a Photo Shoot | Ryan Owen Photography" />
   <meta property="og:description" content="Submit a photography request and get an instant price estimate. Real estate, drone, twilight, video, and virtual tours. Ocean City, MD." />
-  <meta property="og:image" content="https://www.ryanowenphotography.com/site/images/og-image.jpg" />
+  <meta property="og:image" content="https://www.ryanowenphotography.com/images/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:url" content="https://www.ryanowenphotography.com/booking_form.html" />
@@ -18,7 +18,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Book a Shoot | Ryan Owen Photography" />
   <meta name="twitter:description" content="Request real estate photography and get an instant estimate. Ocean City, MD and the Eastern Shore." />
-  <meta name="twitter:image" content="https://www.ryanowenphotography.com/site/images/og-image.jpg" />
+  <meta name="twitter:image" content="https://www.ryanowenphotography.com/images/og-image.jpg" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     /* ========= BASE LAYOUT ========= */
@@ -396,7 +396,7 @@
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="/site/index.html" aria-label="Ryan Owen Photography Home">
+      <a class="brand" href="/" aria-label="Ryan Owen Photography Home">
         <img class="brand-logo" src="/static/ROM_logo.webp" alt="Ryan Owen Photography">
       </a>
 
@@ -406,11 +406,11 @@
 
 
       <nav id="site-nav" class="site-nav" aria-label="Primary">
-        <a href="/site/portfolio.html">Portfolio</a>
-        <a href="/site/about.html">About</a>
-        <a href="/site/services.html">Services</a>
-        <a href="/site/stock.html">Stock</a>
-        <a href="/site/contact.html">Contact</a>
+        <a href="/portfolio">Portfolio</a>
+        <a href="/about">About</a>
+        <a href="/services">Services</a>
+        <a href="/stock">Stock</a>
+        <a href="/contact">Contact</a>
         <a class="phone-link" href="tel:+12404018385">240-401-8385</a>
       </nav>
     </div>
@@ -434,7 +434,7 @@
     </div>
 
     <!-- ========= HERO IMAGE ========= -->
-    <img id="hero-image" src="https://githubrequestform.onrender.com/static/image.jpg" alt="Ryan Owen Photography" class="hero-image" />
+    <img id="hero-image" src="/images/image.jpg" alt="Ryan Owen Photography" class="hero-image" />
 
     <!-- ========= FORM VIEW (MAIN CONTENT) ========= -->
     <div id="form-container">
@@ -658,7 +658,7 @@
           <div class="service-row">
             <label><input type="checkbox" value="Catalogue Style Photos (Quality not Quantity)" /> Catalogue Style Photos (Quality not Quantity) <button type="button" class="info-btn" data-target="info-catalogue" aria-label="More info about Catalogue Style Photos">ⓘ</button></label>
             <div class="info-popover" id="info-catalogue">
-              <img src="https://githubrequestform.onrender.com/static/Tenley34855-49.jpg" alt="Catalogue Style Photo example" />
+              <img src="/images/Tenley34855-49.jpg" alt="Catalogue Style Photo example" />
               <p>For the best possible photos of your listing we bring the studio to you. Using daylight balanced strobes to recreate natural looking, yet dramatic lighting. This creates true colors and spectral highlights that make your listing "pop". These shoots can take up to 4 hours.</p>
             </div>
           </div>
@@ -666,7 +666,7 @@
           <div class="service-row">
             <label><input type="checkbox" value="Twilight Photos" /> Twilight Photos <button type="button" class="info-btn" data-target="info-twilight" aria-label="More info about Twilight Photos">ⓘ</button></label>
             <div class="info-popover" id="info-twilight">
-              <img src="/site/images/twilight.jpg" alt="Twilight Photo example" />
+              <img src="/images/twilight.jpg" alt="Twilight Photo example" />
               <p>Sunset exteriors with enhanced lighting make your listing glow. Typically 5-10 "Hero" shots. <strong><a href="#" onclick="document.querySelector('input[value=\'Interior Twilights\']').checked=true; return false;" style="color:#0066cc;">Click here to add interior twilights</a></strong> (note: may require two shoots)</p>
             </div>
           </div>
@@ -704,7 +704,7 @@
         <label>Terms of Service *</label>
         <div class="tos-text">
           By submitting this form you agree to the
-          <a href="/site/terms.html">
+          <a href="/terms">
             Terms of Service
           </a>.
         </div>
@@ -985,7 +985,7 @@
     const thankyouContainer = document.getElementById("thankyou-container");
     const newRequestBtn = document.getElementById("new-request-btn");
     const heroImg = document.getElementById("hero-image");
-    const HERO_SRC = "https://githubrequestform.onrender.com/static/image.jpg";
+    const HERO_SRC = "/images/image.jpg";
     const THANKYOU_SRC = "/static/thankYou.jpg";
     const HERO_CROP = "50% 50%";      // center
     const THANKYOU_CROP = "50% 65%";  // shifts focus upward 
