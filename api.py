@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Depends, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -27,7 +27,6 @@ from models import engine
 
 
 from fastapi import Depends, HTTPException, Request, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import or_
 from sqlalchemy import text
 
@@ -52,9 +51,6 @@ def startup_event():
 
 # Serve static files (e.g. /static/image.jpg)
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Serve the main website pages
-app.mount("/site", StaticFiles(directory="site", html=True), name="site")
 
 origins = [
     "http://127.0.0.1:8001",
@@ -845,14 +841,13 @@ def options_jobs():
     return Response(status_code=200)
 
 
-@app.get("/", response_class=HTMLResponse)
-@app.get("/booking_form.html", response_class=HTMLResponse)
+@app.get("/", response_class=RedirectResponse)
+@app.get("/booking_form.html", response_class=RedirectResponse)
 def booking_form():
     """
-    Serve the booking form HTML from the same origin as the API.
+    Redirect to the new site hosted on GitHub Pages.
     """
-    with open("booking_form.html", encoding="utf-8") as f:
-        return f.read()
+    return RedirectResponse(url="https://www.ryanowenphotography.com/request-form", status_code=301)
 
 
 @app.post("/jobs", response_model=JobResponse)
