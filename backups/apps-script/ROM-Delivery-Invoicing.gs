@@ -36,7 +36,8 @@ const INVOICE_HEADERS = [
 
 const EMAIL_FROM_NAME = "Ryan Owen Photography";
 const EMAIL_FROM_ADDRESS = "ryan@ryanowenphotography.com"; // Production email (Gmail send-as)
-const EMAIL_BCC_ADDRESS = "bardo.faraday+rom@gmail.com"; // TEST MODE - BCC to test email
+const EMAIL_CC_ADDRESSES = "ryan.owen@ryanowenphotography.com, ryan@ryanowenphotography.com";
+const EMAIL_BCC_ADDRESS = "bardo.faraday+rom@gmail.com";
 
 // Payment QR image filenames in Drive (by exact name)
 const ZELLE_QR_FILENAME = "ZelleQr.jpg";
@@ -420,7 +421,7 @@ function runPhotosOnly_(opts) {
  "www.ryanowenphotography.com<br><br><br>" +
  "<b>*** In order to give every project my full attention, I cannot respond to emails or texts while I am shooting. Thank you for your patience. ***</b>";
 
- GmailApp.sendEmail(toEmail, subject, body, { name: EMAIL_FROM_NAME, htmlBody, bcc: EMAIL_BCC_ADDRESS });
+ GmailApp.sendEmail(toEmail, subject, body, { name: EMAIL_FROM_NAME, htmlBody, cc: EMAIL_CC_ADDRESSES, bcc: EMAIL_BCC_ADDRESS });
 
 
  items.forEach(it => {
@@ -574,6 +575,7 @@ function runPhotosPlusInvoice_(opts) {
  attachments: [pdfFile.getBlob()],
  htmlBody: htmlBody,
  inlineImages: { zelleqr: zelleBlob, venmoqr: venmoBlob },
+ cc: EMAIL_CC_ADDRESSES,
  bcc: EMAIL_BCC_ADDRESS,
  });
 
@@ -806,6 +808,7 @@ function runLockedPhotosPlusInvoice_(opts) {
  attachments: [pdfFile.getBlob()],
  htmlBody: htmlBody,
  inlineImages: { zelleqr: zelleBlob, venmoqr: venmoBlob },
+ cc: EMAIL_CC_ADDRESSES,
  bcc: EMAIL_BCC_ADDRESS,
  });
 
@@ -919,6 +922,7 @@ function runThankYouDownloadLink_(opts) {
  GmailApp.sendEmail(toEmail, subject, body, {
  name: EMAIL_FROM_NAME,
  htmlBody: htmlBody,
+ cc: EMAIL_CC_ADDRESSES,
  bcc: EMAIL_BCC_ADDRESS,
  });
  }
@@ -1058,6 +1062,7 @@ function runInvoiceOnly_(opts) {
  attachments: [pdfFile.getBlob()],
  htmlBody: htmlBody,
  inlineImages: { zelleqr: zelleBlob, venmoqr: venmoBlob },
+ cc: EMAIL_CC_ADDRESSES,
  bcc: EMAIL_BCC_ADDRESS,
  });
  }
@@ -2026,6 +2031,7 @@ function runOverdueAttempt_(opts) {
  attachments: attachments,
  htmlBody: htmlBody,
  inlineImages: { zelleqr: zelleBlob, venmoqr: venmoBlob },
+ cc: EMAIL_CC_ADDRESSES,
  bcc: EMAIL_BCC_ADDRESS,
  });
 
