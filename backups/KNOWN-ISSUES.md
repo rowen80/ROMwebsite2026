@@ -51,3 +51,25 @@ References column R (Estimated Line Items). Open-ended range so it should cover 
 1. **Add a Google Sheets "clear cell" step in n8n** after the append — get the row number from the append response, clear just the Total cell in that row, letting ARRAYFORMULA take over. Requires knowing the inserted row number.
 2. **Replace ARRAYFORMULA with a trigger-based Apps Script** — on sheet edit/change, write the formula result into Total for new rows. More robust against API insertions.
 3. **Accept manual fix** — after each new submission, delete the blank Total cell (one click). Low volume business so may be acceptable.
+
+---
+
+## n8n: InvoiceStatus Column Has Same ARRAYFORMULA Problem
+
+**Status:** Unresolved — deferred (confirmed 2026-04-05)
+**Related issue:** Same root cause as "Total Column Overwritten" above
+
+### What happens
+The `InvoiceStatus` column in `2026 FORM_DATA` uses an ARRAYFORMULA to pull invoice status from the `INVOICES` tab (e.g., SENT, PAID). When n8n appends a new row via the Google Sheets API `values.append`, the cell is left in a blank/static state — the ARRAYFORMULA does not cover it. As a result, the Apps Script workflows that read `InvoiceStatus` from FORM_DATA (e.g., Thank You Download Link) see a blank status and filter the row out as ineligible.
+
+**Confirmed test:** Deleting the entire InvoiceStatus column (removing the static blank cells) caused the ARRAYFORMULA to re-cover the range and the Thank You workflow immediately found the eligible row and worked correctly.
+
+### Impact
+- **Thank You Download Link** workflow: rows are silently skipped because `InvoiceStatus` reads as blank instead of "PAID"
+- Any other workflow that reads `InvoiceStatus` from FORM_DATA is affected by the same issue
+
+### Root cause
+Same as the Total column issue: `values.append` physically inserts a row, leaving an explicit blank in the ARRAYFORMULA-covered column. The ARRAYFORMULA does not override explicit blanks in physically inserted rows.
+
+### Possible solutions to evaluate
+Same options as the Total column — the most robust fix would be a single solution that addresses both columns at once (e.g., an n8n step that clears the affected cells after append, or replacing both ARRAYFORMULAs with a trigger-based Apps Script).
