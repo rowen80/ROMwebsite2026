@@ -37,7 +37,7 @@ const INVOICE_HEADERS = [
 const EMAIL_FROM_NAME = "Ryan Owen Photography";
 const EMAIL_FROM_ADDRESS = "ryan@ryanowenphotography.com"; // Production email (Gmail send-as)
 const EMAIL_CC_ADDRESSES = "ryan.owen@ryanowenphotography.com, ryan@ryanowenphotography.com";
-const EMAIL_BCC_ADDRESS = "bardo.faraday@gmail.com";
+const EMAIL_BCC_ADDRESS = "bardo.faraday+rom@gmail.com";
 
 // Payment QR image filenames in Drive (by exact name)
 const ZELLE_QR_FILENAME = "ZelleQr.jpg";
