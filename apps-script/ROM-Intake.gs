@@ -37,9 +37,9 @@
 // CONFIGURATION — update ACTIVE_SHEET_ID when switching environments
 // ============================================================
 
-const INTAKE_PROD_SHEET_ID  = "1F87dygig_3HFPvtWp7x1KfKdowyoBPKnKCAjLUYyoKs"; // ROM_CUSTOMER_MASTER (live)
-const INTAKE_STAGE_SHEET_ID = "17L80EjoMc8RQYZwob5I2XtXTY9J0yo73a6P5Fr0noUQ"; // ROMwebsite2026_data (staging)
-const INTAKE_ACTIVE_SHEET_ID = INTAKE_STAGE_SHEET_ID; // ← switch to PROD when ready
+const INTAKE_PROD_SHEET_ID  = "1F87dygig_3HFPvtWp7x1KfKdowyoBPKnKCAjLUYyoKs"; // ROM_CUSTOMERS_LIVE — DO NOT use for intake
+const INTAKE_STAGE_SHEET_ID = "17L80EjoMc8RQYZwob5I2XtXTY9J0yo73a6P5Fr0noUQ"; // ROM_DATA_LIVE — CORRECT intake target
+const INTAKE_ACTIVE_SHEET_ID = INTAKE_STAGE_SHEET_ID; // ← LEAVE THIS AS STAGE — STAGE is the live operations sheet
 const INTAKE_SHEET_TAB = "2026 FORM_DATA";
 
 // ============================================================
