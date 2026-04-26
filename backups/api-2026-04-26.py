@@ -751,9 +751,6 @@ class CustomerMergeRequest(BaseModel):
     source_customer_id: int
     target_customer_id: int
 
-class CustomerDeleteRequest(BaseModel):
-    customer_ids: List[int]
-
 
 @app.post("/admin/customers/merge")
 def merge_customers(req: CustomerMergeRequest, request: Request):
@@ -825,31 +822,6 @@ def merge_customers(req: CustomerMergeRequest, request: Request):
             "merged_source": source_id,
             "into_target": target_id,
         }
-    finally:
-        db.close()
-
-
-@app.post("/admin/customers/delete")
-def delete_customers(req: CustomerDeleteRequest, request: Request):
-    require_customer_sync_key(request)
-
-    if not req.customer_ids:
-        raise HTTPException(status_code=400, detail="No customer_ids provided")
-
-    db = SessionLocal()
-    try:
-        deleted = []
-        for cid in req.customer_ids:
-            customer = db.query(Customer).get(cid)
-            if not customer:
-                continue
-            # Delete related records first to satisfy FK constraints
-            db.query(InvoiceItem).filter(InvoiceItem.customer_id == cid).delete(synchronize_session=False)
-            db.query(Job).filter(Job.customer_id == cid).delete(synchronize_session=False)
-            db.delete(customer)  # aliases cascade via relationship
-            deleted.append(cid)
-        db.commit()
-        return {"status": "ok", "deleted_count": len(deleted), "deleted_ids": deleted}
     finally:
         db.close()
 
