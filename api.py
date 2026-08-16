@@ -323,11 +323,15 @@ def sanitize_for_sheet(value: Optional[str]) -> Optional[str]:
     return value
 
 
-def verify_turnstile(token: Optional[str], remote_ip: Optional[str] = None) -> bool:
+def verify_turnstile(token: Optional[str]) -> bool:
     """
     Confirm a Cloudflare Turnstile token with Cloudflare's siteverify endpoint.
     Fails closed: any missing config, missing token, network error, or
     unsuccessful verification returns False.
+
+    remoteip is intentionally omitted: it's optional per Cloudflare's API, and
+    behind Render's proxy request.client.host isn't the visitor's real IP, so
+    sending it caused every verification to fail.
     """
     if not TURNSTILE_SECRET_KEY or not token:
         return False
@@ -337,11 +341,12 @@ def verify_turnstile(token: Optional[str], remote_ip: Optional[str] = None) -> b
             data={
                 "secret": TURNSTILE_SECRET_KEY,
                 "response": token,
-                "remoteip": remote_ip,
             },
             timeout=10,
         )
         result = resp.json()
+        if not result.get("success"):
+            print(f"[TURNSTILE] Verification failed: {result.get('error-codes')}")
         return bool(result.get("success"))
     except Exception as e:
         print(f"[TURNSTILE] Verification request failed: {e}")
@@ -979,7 +984,7 @@ def create_job(job_in: JobCreate, request: Request):
         raise HTTPException(status_code=400, detail="Submission rejected.")
 
     client_ip = request.client.host if request.client else None
-    if not verify_turnstile(job_in.turnstile_token, client_ip):
+    if not verify_turnstile(job_in.turnstile_token):
         print(f"[SPAM] Turnstile verification failed for submission from {client_ip}")
         raise HTTPException(status_code=400, detail="Verification failed. Please try submitting again.")
 
