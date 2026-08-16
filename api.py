@@ -82,6 +82,12 @@ if not N8N_INTAKE_WEBHOOK_URL:
 
 FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://127.0.0.1:8000")
 
+TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY")
+TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+
+if not TURNSTILE_SECRET_KEY:
+    print("WARNING: TURNSTILE_SECRET_KEY not set in .env. /jobs will reject all submissions.")
+
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-change-me")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
@@ -150,6 +156,13 @@ class JobCreate(BaseModel):
 
     # notes
     notes_for_photographer: Optional[str] = None
+
+    # honeypot: real users never see/fill this field. Bots that auto-fill every
+    # input on the form will trip it.
+    website: Optional[str] = None
+
+    # Cloudflare Turnstile response token, verified server-side before we accept the job
+    turnstile_token: Optional[str] = None
 
 class EstimateLineItem(BaseModel):
     code: str
@@ -257,6 +270,82 @@ def clean_text(value: Optional[str]) -> Optional[str]:
         return None
     value = str(value).strip()
     return value or None
+
+
+# ------------------------------------------------------------
+# Spam / bot guards for /jobs
+# ------------------------------------------------------------
+
+# SMS-to-email gateway domains: legitimate carriers offer these for texting,
+# but real agents don't give them out as a contact email — bots that generate
+# a random phone number + matching gateway address use these a lot.
+DISPOSABLE_EMAIL_DOMAINS = {
+    "tmomail.net",          # T-Mobile
+    "vtext.com",            # Verizon
+    "vzwpix.com",           # Verizon (MMS)
+    "txt.att.net",          # AT&T
+    "mms.att.net",          # AT&T (MMS)
+    "messaging.sprintpcs.com",  # Sprint
+    "pm.sprint.com",        # Sprint
+    "mymetropcs.com",       # Metro by T-Mobile
+    "myboostmobile.com",    # Boost Mobile
+    "sms.mycricket.com",    # Cricket
+    "mmst5.tracfone.com",   # Tracfone
+}
+
+MIN_REASONABLE_YEAR = 2020  # anything before this in a date field is not a real listing date
+
+
+def is_suspicious_date(value: Optional[str]) -> bool:
+    if not value:
+        return False
+    try:
+        year = int(str(value)[:4])
+    except (ValueError, TypeError):
+        return False
+    return year < MIN_REASONABLE_YEAR
+
+
+FORMULA_TRIGGER_CHARS = ("=", "+", "-", "@")
+
+
+def sanitize_for_sheet(value: Optional[str]) -> Optional[str]:
+    """
+    Neutralize leading characters (=, +, -, @) that Google Sheets/Excel treat as
+    formula triggers, so a submitted value can't execute as a formula once it
+    lands in the intake sheet.
+    """
+    if not value:
+        return value
+    text = str(value)
+    if text and text[0] in FORMULA_TRIGGER_CHARS:
+        return "'" + text
+    return value
+
+
+def verify_turnstile(token: Optional[str], remote_ip: Optional[str] = None) -> bool:
+    """
+    Confirm a Cloudflare Turnstile token with Cloudflare's siteverify endpoint.
+    Fails closed: any missing config, missing token, network error, or
+    unsuccessful verification returns False.
+    """
+    if not TURNSTILE_SECRET_KEY or not token:
+        return False
+    try:
+        resp = requests.post(
+            TURNSTILE_VERIFY_URL,
+            data={
+                "secret": TURNSTILE_SECRET_KEY,
+                "response": token,
+                "remoteip": remote_ip,
+            },
+            timeout=10,
+        )
+        result = resp.json()
+        return bool(result.get("success"))
+    except Exception as e:
+        print(f"[TURNSTILE] Verification request failed: {e}")
+        return False
 
 
 def normalize_phone(phone: Optional[str]) -> Optional[str]:
@@ -879,11 +968,41 @@ def booking_form():
 
 
 @app.post("/jobs", response_model=JobResponse)
-def create_job(job_in: JobCreate):
+def create_job(job_in: JobCreate, request: Request):
     """
     Create a new job from the app and hand off to n8n for email and sheet intake.
     Returns 502 if the n8n handoff fails (DB transaction is rolled back).
     """
+    # ---------- Spam / bot guards ----------
+    if job_in.website:
+        print(f"[SPAM] Honeypot field filled, rejecting submission: {job_in.website!r}")
+        raise HTTPException(status_code=400, detail="Submission rejected.")
+
+    client_ip = request.client.host if request.client else None
+    if not verify_turnstile(job_in.turnstile_token, client_ip):
+        print(f"[SPAM] Turnstile verification failed for submission from {client_ip}")
+        raise HTTPException(status_code=400, detail="Verification failed. Please try submitting again.")
+
+    email_domain = job_in.email.split("@")[-1].lower() if job_in.email else ""
+    if email_domain in DISPOSABLE_EMAIL_DOMAINS:
+        print(f"[SPAM] Disposable/gateway email domain rejected: {job_in.email}")
+        raise HTTPException(status_code=400, detail="Please use a standard email address, not an SMS/gateway address.")
+
+    if is_suspicious_date(job_in.date_listing_ready) or is_suspicious_date(job_in.date_to_go_live):
+        print(f"[SPAM] Suspicious date rejected: ready={job_in.date_listing_ready} live={job_in.date_to_go_live}")
+        raise HTTPException(status_code=400, detail="Please provide a valid date.")
+
+    # Neutralize formula-injection characters before this data reaches the Sheet
+    job_in.first_name = sanitize_for_sheet(job_in.first_name)
+    job_in.last_name = sanitize_for_sheet(job_in.last_name)
+    job_in.agency = sanitize_for_sheet(job_in.agency)
+    job_in.address = sanitize_for_sheet(job_in.address)
+    job_in.city = sanitize_for_sheet(job_in.city)
+    job_in.building_name = sanitize_for_sheet(job_in.building_name)
+    job_in.access_code = sanitize_for_sheet(job_in.access_code)
+    job_in.owner_contact_info = sanitize_for_sheet(job_in.owner_contact_info)
+    job_in.notes_for_photographer = sanitize_for_sheet(job_in.notes_for_photographer)
+
     db = SessionLocal()
     try:
         # ---------- Build price estimate (NEW) ----------

@@ -392,6 +392,7 @@
       }
     }
   </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -459,6 +460,12 @@
 
       <!-- ========= BOOKING FORM ========= -->
       <form id="booking-form">
+        <!-- Honeypot: real visitors never see this field. Bots that auto-fill every input trip it. -->
+        <div style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true">
+          <label for="website">Leave this field blank</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+
         <!-- Name -->
         <label>Name *</label>
         <input type="text" id="first_name" placeholder="First Name" required />
@@ -715,6 +722,8 @@
             Accept
           </label>
         </div>
+
+        <div class="cf-turnstile" id="turnstile-widget" data-sitekey="0x4AAAAAAERopGNkbgV1_h1j" style="margin-top:18px;"></div>
 
         <button type="submit" style="margin-top:18px;">Submit</button>
 
@@ -1403,7 +1412,19 @@
         const accessTypeEl = form.querySelector("input[name='access_type']:checked");
         const accessType = accessTypeEl ? accessTypeEl.value : null;
 
+        // Turnstile verification
+        const turnstileToken = (typeof turnstile !== "undefined") ? turnstile.getResponse() : "";
+        if (!turnstileToken) {
+          messageEl.textContent = "Please complete the verification check before submitting.";
+          messageEl.classList.add("error");
+          btn.disabled = false;
+          btn.textContent = "Submit";
+          return;
+        }
+
         const payload = {
+          website: document.getElementById("website").value.trim(),
+          turnstile_token: turnstileToken,
           first_name: document.getElementById("first_name").value.trim(),
           last_name: document.getElementById("last_name").value.trim(),
           email: document.getElementById("email").value.trim(),
@@ -1449,6 +1470,7 @@
 
           // Switch to Thank You view
           form.reset();
+          if (typeof turnstile !== "undefined") turnstile.reset();
           messageEl.textContent = "";
           messageEl.className = "message";
           formContainer.style.display = "none";
@@ -1464,6 +1486,7 @@
           console.error(err);
           messageEl.textContent = "Sorry, something went wrong. Please try again or email Ryan directly.";
           messageEl.classList.add("error");
+          if (typeof turnstile !== "undefined") turnstile.reset();
         } finally {
           btn.disabled = false;
           btn.textContent = "Submit";
@@ -1480,6 +1503,7 @@
         messageEl.textContent = "";
         messageEl.className = "message";
         form.reset();
+        if (typeof turnstile !== "undefined") turnstile.reset();
         renderEstimate(null);
         scrollToTopSafe();
         try { window.parent.postMessage({ type: "ROM_SCROLL_TO_FORM_TOP" }, "https://www.ryanowenphotography.com"); } catch (_) {}
